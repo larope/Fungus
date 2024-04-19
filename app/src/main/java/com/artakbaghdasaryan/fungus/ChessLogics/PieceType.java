@@ -1,10 +1,11 @@
 package com.artakbaghdasaryan.fungus.ChessLogics;
 
-public enum ChessPiece {
+public enum PieceType {
     pawn,
     bishop,
     knight,
     rook,
     queen,
-    king
+    king,
+    empty
 }
