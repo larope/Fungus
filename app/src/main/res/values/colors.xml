@@ -3,4 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
+
+    <color name="cell_black_highlighted">#384c5e</color>
+    <color name="cell_black">#577590</color>
+
+    <color name="cell_white_highlighted">#6b5521</color>
+    <color name="cell_white">#f9c74f</color>
 </resources>

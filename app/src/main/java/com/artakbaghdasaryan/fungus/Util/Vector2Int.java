@@ -37,20 +37,14 @@ public class Vector2Int
     public static Vector2Int Minus(Vector2Int vec1, Vector2Int vec2){
         return new Vector2Int(vec1.x - vec2.x, vec1.y - vec2.y);
     }
-    public static Vector2Int up = new Vector2Int(0,1);
-    public static Vector2Int right = new Vector2Int(1,0);
-    public static Vector2Int down = new Vector2Int(0,-1);
-    public static Vector2Int left = new Vector2Int(-1,0);
-    public static Vector2Int upRight = new Vector2Int(1,1);
-    public static Vector2Int upLeft = new Vector2Int(-1,1);
-    public static Vector2Int downLeft = new Vector2Int(-1,-1);
-    public static Vector2Int downRight = new Vector2Int(1,-1);
+
     public int hashCode() {
         int result = 17;
         result = 31 * result + x;
         result = 31 * result + y;
         return result;
     }
+
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -69,4 +63,14 @@ public class Vector2Int
         }
     }
 
+    public static Vector2Int up = new Vector2Int(0,1);
+    public static Vector2Int right = new Vector2Int(1,0);
+    public static Vector2Int down = new Vector2Int(0,-1);
+    public static Vector2Int left = new Vector2Int(-1,0);
+    public static Vector2Int upRight = new Vector2Int(1,1);
+    public static Vector2Int upLeft = new Vector2Int(-1,1);
+    public static Vector2Int downLeft = new Vector2Int(-1,-1);
+    public static Vector2Int downRight = new Vector2Int(1,-1);
+    public static Vector2Int zero = new Vector2Int(0,0);
+    public static Vector2Int empty = new Vector2Int(-69,-69);
 }

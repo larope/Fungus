@@ -95,22 +95,22 @@ public class MovingPattern {
             new Vector2Int(8,8),
 
             new Vector2Int(-1,-1),
-            new Vector2Int(-2,-1),
-            new Vector2Int(-3,-1),
-            new Vector2Int(-4,-1),
-            new Vector2Int(-5,-1),
-            new Vector2Int(-6,-1),
-            new Vector2Int(-7,-1),
-            new Vector2Int(-8,-1),
+            new Vector2Int(-2,-2),
+            new Vector2Int(-3,-3),
+            new Vector2Int(-4,-4),
+            new Vector2Int(-5,-5),
+            new Vector2Int(-6,-6),
+            new Vector2Int(-7,-7),
+            new Vector2Int(-8,-8),
 
             new Vector2Int(-1,1),
-            new Vector2Int(-1,2),
-            new Vector2Int(-1,3),
-            new Vector2Int(-1,4),
-            new Vector2Int(-1,5),
-            new Vector2Int(-1,6),
-            new Vector2Int(-1,7),
-            new Vector2Int(-1,8),
+            new Vector2Int(-2,2),
+            new Vector2Int(-3,3),
+            new Vector2Int(-4,4),
+            new Vector2Int(-5,5),
+            new Vector2Int(-6,6),
+            new Vector2Int(-7,7),
+            new Vector2Int(-8,8),
 
             new Vector2Int(1,-1),
             new Vector2Int(2,-2),
@@ -144,22 +144,22 @@ public class MovingPattern {
             new Vector2Int(8,8),
 
             new Vector2Int(-1,-1),
-            new Vector2Int(-2,-1),
-            new Vector2Int(-3,-1),
-            new Vector2Int(-4,-1),
-            new Vector2Int(-5,-1),
-            new Vector2Int(-6,-1),
-            new Vector2Int(-7,-1),
-            new Vector2Int(-8,-1),
+            new Vector2Int(-2,-2),
+            new Vector2Int(-3,-3),
+            new Vector2Int(-4,-4),
+            new Vector2Int(-5,-5),
+            new Vector2Int(-6,-6),
+            new Vector2Int(-7,-7),
+            new Vector2Int(-8,-8),
 
             new Vector2Int(-1,1),
-            new Vector2Int(-1,2),
-            new Vector2Int(-1,3),
-            new Vector2Int(-1,4),
-            new Vector2Int(-1,5),
-            new Vector2Int(-1,6),
-            new Vector2Int(-1,7),
-            new Vector2Int(-1,8),
+            new Vector2Int(-2,2),
+            new Vector2Int(-3,3),
+            new Vector2Int(-4,4),
+            new Vector2Int(-5,5),
+            new Vector2Int(-6,6),
+            new Vector2Int(-7,7),
+            new Vector2Int(-8,8),
 
             new Vector2Int(1,-1),
             new Vector2Int(2,-2),
@@ -218,9 +218,14 @@ public class MovingPattern {
             new Vector2Int(0,1)
     });
 
-    public static MovingPattern pawnPattern = new MovingPattern(new Vector2Int[]{
-            new Vector2Int(-1,-1),
+    public static MovingPattern whitePawnPattern = new MovingPattern(new Vector2Int[]{
             new Vector2Int(-1,1),
+            new Vector2Int(0,1),
             new Vector2Int(1,1)
+    });
+    public static MovingPattern blackPawnPattern = new MovingPattern(new Vector2Int[]{
+            new Vector2Int(-1,-1),
+            new Vector2Int(0,-1),
+            new Vector2Int(1,-1)
     });
 }

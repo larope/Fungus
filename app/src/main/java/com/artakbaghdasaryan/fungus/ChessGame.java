@@ -2,13 +2,10 @@ package com.artakbaghdasaryan.fungus;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
@@ -17,18 +14,25 @@ import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
-import com.artakbaghdasaryan.fungus.Util.OutOfBoardException;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ChessGame extends AppCompatActivity {
     private final int boardSize = 8;
     private Board _board;
     private HashMap<Vector2Int, ImageButton> _cellsToButtons;
+    private Cell _selectedCell;
+    private ArrayList<Cell> _availableCells;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        _availableCells = new ArrayList<Cell>();
+        _selectedCell = new Cell(0,0,CellColor.black,Piece.Empty);
+        _selectedCell.position = Vector2Int.empty;
+        _selectedCell.piece = Piece.Empty;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess_game);
 
@@ -105,6 +109,7 @@ public class ChessGame extends AppCompatActivity {
         _cellsToButtons.put(new Vector2Int(5,7), (ImageButton) findViewById(R.id.cell86));
         _cellsToButtons.put(new Vector2Int(6,7), (ImageButton) findViewById(R.id.cell87));
         _cellsToButtons.put(new Vector2Int(7,7), (ImageButton) findViewById(R.id.cell88));
+        Log.d("MALOG",  _selectedCell.position.x + " " + _selectedCell.position.y);
 
         Cell[][] cells = new Cell[boardSize][boardSize];
         int num = 0;
@@ -114,10 +119,10 @@ public class ChessGame extends AppCompatActivity {
                 CellColor color;
                 if((y+x)%2 == 0) {
                     color = CellColor.white;
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.white));
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_white));
                 }else{
                     color = CellColor.black;
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.black));
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_black));
                 }
                 cells[y][x] = new Cell(x, y, color, Piece.Empty);
 
@@ -126,7 +131,7 @@ public class ChessGame extends AppCompatActivity {
                 _cellsToButtons.get(new Vector2Int(x, y)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ShowAvailableMoves(new Vector2Int(finalX, finalY));
+                        SelectCell(new Vector2Int(finalX, finalY));
                     }
                 });
                 num++;
@@ -135,35 +140,94 @@ public class ChessGame extends AppCompatActivity {
 
         _board = new Board(new Vector2Int(boardSize,boardSize), cells);
 
-        AddPiece(new Vector2Int(1,1), Piece.WKnight);
-        AddPiece(new Vector2Int(2,2), Piece.WRook);
-        AddPiece(new Vector2Int(3,3), Piece.WKnight);
-        AddPiece(new Vector2Int(2,3), Piece.WRook);
-        AddPiece(new Vector2Int(4,4), Piece.WRook);
-        AddPiece(new Vector2Int(4,3), Piece.WRook);
+        for(int i = 0; i < 8; i++){
+            ChangePiece(new Vector2Int(i,1), Piece.WPawn);
+            ChangePiece(new Vector2Int(i,6), Piece.BPawn);
+        }
 
+        ChangePiece(new Vector2Int(0,0), Piece.WRook);
+        ChangePiece(new Vector2Int(7,0), Piece.WRook);
+
+        ChangePiece(new Vector2Int(1,0), Piece.WKnight);
+        ChangePiece(new Vector2Int(6,0), Piece.WKnight);
+
+        ChangePiece(new Vector2Int(2,0), Piece.WBishop);
+        ChangePiece(new Vector2Int(5,0), Piece.WBishop);
+
+        ChangePiece(new Vector2Int(3,0), Piece.WQueen);
+        ChangePiece(new Vector2Int(4,0), Piece.WKing);
+
+
+        ChangePiece(new Vector2Int(0,7), Piece.BRook);
+        ChangePiece(new Vector2Int(7,7), Piece.BRook);
+
+        ChangePiece(new Vector2Int(1,7), Piece.BKnight);
+        ChangePiece(new Vector2Int(6,7), Piece.BKnight);
+
+        ChangePiece(new Vector2Int(2,7), Piece.BBishop);
+        ChangePiece(new Vector2Int(5,7), Piece.BBishop);
+
+        ChangePiece(new Vector2Int(3,7), Piece.BQueen);
+        ChangePiece(new Vector2Int(4,7), Piece.BKing);
 
 
     }
 
-    private void AddPiece(Vector2Int position, Piece piece){
+    private void ChangePiece(Vector2Int position, Piece piece){
         Cell newCell = _board.GetCell(position);
         newCell.piece = piece;
         _board.SetCell(newCell.position, newCell);
-        _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(newCell.piece.type, PieceColor.black));
+
+        if(piece == Piece.Empty){
+            _cellsToButtons.get(position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(newCell.piece.type, PieceColor.black));
+        }
     }
 
-    private void ShowAvailableMoves(Vector2Int position){
+    private void SelectCell(Vector2Int position){
         ReturnNormalColors();
-        for(Cell cell : _board.GetAvailableMoves(_board.GetCell(position))){
-            _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.red));
+
+
+
+        if (position.equals(_selectedCell.position)){
+            _selectedCell = Cell.Empty;
+            _availableCells.clear();
+            return;
         }
+        else if(_selectedCell.piece != Piece.Empty && _availableCells.size() > 0){
+            for(int i = 0; i < _availableCells.size(); i++){
+                Vector2Int _selectedCellPosition = new Vector2Int(_selectedCell.position.x, _selectedCell.position.y);
+                Log.d("MALOG", _availableCells.get(i).position.x + " " + _availableCells.get(i).position.y + " : " + position.x + " " + position.y);
+                if(position.equals(_availableCells.get(i).position) && _board.GetCell(position).piece.color != _selectedCell.piece.color){
+                    ChangePiece(position, _selectedCell.piece);
+                    ChangePiece(_selectedCellPosition, Piece.Empty);
+                    return;
+                }
+            }
+            _availableCells.clear();
+        }
+
+        _availableCells = _board.GetAvailableMoves(_board.GetCell(position));
+
+        for(Cell cell : _availableCells){
+            if(cell.color == CellColor.black){
+                _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
+            }
+            else{
+                _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_white_highlighted));
+            }
+        }
+        _selectedCell = _board.GetCell(position.x, position.y);
     }
 
     private Drawable GetDrawableForPiece(PieceType type, PieceColor color){
         switch (type){
             case knight:
                 return getResources().getDrawable(R.drawable.knight_white);
+            case bishop:
+                return getResources().getDrawable(R.drawable.bishop_black);
             default:
                 return getResources().getDrawable(R.drawable.knight_white);
         }
@@ -173,10 +237,10 @@ public class ChessGame extends AppCompatActivity {
         for(int y = 0; y < boardSize; y++){
             for(int x = 0; x < boardSize; x++){
                 if(_board.GetCell(x,y).color == CellColor.black){
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.black));
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_black));
                 }
                 else{
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.white));
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_white));
                 }
             }
         }

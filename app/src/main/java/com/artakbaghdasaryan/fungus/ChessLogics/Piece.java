@@ -29,6 +29,7 @@ public class Piece {
         this.pattern = pattern;
     }
 
+
     public static Piece Empty = new Piece(PieceType.empty);
 
     public static Piece WRook = new Piece(
@@ -84,11 +85,11 @@ public class Piece {
     public static Piece WPawn = new Piece(
             PieceType.pawn,
             PieceColor.white,
-            MovingPattern.pawnPattern
+            MovingPattern.whitePawnPattern
     );
     public static Piece BPawn = new Piece(
             PieceType.pawn,
             PieceColor.black,
-            MovingPattern.pawnPattern
+            MovingPattern.blackPawnPattern
     );
 }
