@@ -30,7 +30,7 @@ public class Piece {
     }
 
 
-    public static Piece Empty = new Piece(PieceType.empty);
+    public static final Piece Empty = new Piece(PieceType.empty);
 
     public static Piece WRook = new Piece(
             PieceType.rook,

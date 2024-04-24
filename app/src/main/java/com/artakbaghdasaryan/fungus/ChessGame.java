@@ -211,6 +211,15 @@ public class ChessGame extends AppCompatActivity {
 
         _availableCells = _board.GetAvailableMoves(_board.GetCell(position));
 
+        if(_availableCells.size() == 0 && _board.GetCell(position).piece != Piece.Empty){
+            if(_board.GetCell(position).color == CellColor.black){
+                _cellsToButtons.get(position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
+            }
+            else{
+                _cellsToButtons.get(position).setBackgroundColor(getResources().getColor(R.color.cell_white_highlighted));
+            }
+        }
+
         for(Cell cell : _availableCells){
             if(cell.color == CellColor.black){
                 _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
@@ -219,6 +228,9 @@ public class ChessGame extends AppCompatActivity {
                 _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_white_highlighted));
             }
         }
+
+
+
         _selectedCell = _board.GetCell(position.x, position.y);
     }
 
