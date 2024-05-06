@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
@@ -21,17 +22,22 @@ import java.util.HashMap;
 
 public class ChessGame extends AppCompatActivity {
     private final int boardSize = 8;
+
     private Board _board;
+
     private HashMap<Vector2Int, ImageButton> _cellsToButtons;
-    private Cell _selectedCell;
+
+    private Cell _currentCell;
+    private PieceColor _currentPlayerColor;
     private ArrayList<Cell> _availableCells;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
-        _selectedCell = new Cell(0,0,CellColor.black,Piece.Empty);
-        _selectedCell.position = Vector2Int.empty;
-        _selectedCell.piece = Piece.Empty;
+        _currentCell = new Cell(0,0,CellColor.black,Piece.Empty);
+        _currentCell.position = Vector2Int.empty;
+        _currentCell.piece = Piece.Empty;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess_game);
@@ -109,7 +115,7 @@ public class ChessGame extends AppCompatActivity {
         _cellsToButtons.put(new Vector2Int(5,7), (ImageButton) findViewById(R.id.cell86));
         _cellsToButtons.put(new Vector2Int(6,7), (ImageButton) findViewById(R.id.cell87));
         _cellsToButtons.put(new Vector2Int(7,7), (ImageButton) findViewById(R.id.cell88));
-        Log.d("MALOG",  _selectedCell.position.x + " " + _selectedCell.position.y);
+        Log.d("MALOG",  _currentCell.position.x + " " + _currentCell.position.y);
 
         Cell[][] cells = new Cell[boardSize][boardSize];
         int num = 0;
@@ -128,6 +134,8 @@ public class ChessGame extends AppCompatActivity {
 
                 int finalX = x;
                 int finalY = y;
+
+                _cellsToButtons.get(new Vector2Int(x,y)).setScaleType(ImageView.ScaleType.FIT_CENTER);
                 _cellsToButtons.get(new Vector2Int(x, y)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -182,27 +190,31 @@ public class ChessGame extends AppCompatActivity {
             _cellsToButtons.get(position).setImageDrawable(null);
         }
         else{
-            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(newCell.piece.type, PieceColor.black));
+            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(newCell.piece.type, newCell.piece.color));
         }
     }
 
     private void SelectCell(Vector2Int position){
         ReturnNormalColors();
 
+        if(_currentCell.piece.equals(Piece.Empty) && _board.GetCell(position).piece.color != _currentPlayerColor){
+            return;
+        }
 
-
-        if (position.equals(_selectedCell.position)){
-            _selectedCell = Cell.Empty;
+        if (position.equals(_currentCell.position)){
+            _currentCell = Cell.Empty;
             _availableCells.clear();
             return;
         }
-        else if(_selectedCell.piece != Piece.Empty && _availableCells.size() > 0){
+
+        else if(_currentCell.piece != Piece.Empty && _availableCells.size() > 0 && _currentCell.piece.color == _currentPlayerColor){
             for(int i = 0; i < _availableCells.size(); i++){
-                Vector2Int _selectedCellPosition = new Vector2Int(_selectedCell.position.x, _selectedCell.position.y);
+                Vector2Int _selectedCellPosition = new Vector2Int(_currentCell.position.x, _currentCell.position.y);
                 Log.d("MALOG", _availableCells.get(i).position.x + " " + _availableCells.get(i).position.y + " : " + position.x + " " + position.y);
-                if(position.equals(_availableCells.get(i).position) && _board.GetCell(position).piece.color != _selectedCell.piece.color){
-                    ChangePiece(position, _selectedCell.piece);
+                if(position.equals(_availableCells.get(i).position) && _board.GetCell(position).piece.color != _currentCell.piece.color){
+                    ChangePiece(position, _currentCell.piece);
                     ChangePiece(_selectedCellPosition, Piece.Empty);
+                    ChangePlayerColor();
                     return;
                 }
             }
@@ -220,28 +232,66 @@ public class ChessGame extends AppCompatActivity {
             }
         }
 
-        for(Cell cell : _availableCells){
-            if(cell.color == CellColor.black){
+        for (Cell cell : _availableCells) {
+            if (cell.color == CellColor.black) {
                 _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
-            }
-            else{
+            } else {
                 _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_white_highlighted));
             }
         }
 
+        _currentCell = _board.GetCell(position.x, position.y);
 
 
-        _selectedCell = _board.GetCell(position.x, position.y);
+
+
+
     }
 
     private Drawable GetDrawableForPiece(PieceType type, PieceColor color){
-        switch (type){
-            case knight:
-                return getResources().getDrawable(R.drawable.knight_white);
-            case bishop:
-                return getResources().getDrawable(R.drawable.bishop_black);
-            default:
-                return getResources().getDrawable(R.drawable.knight_white);
+        if(color == PieceColor.white){
+            switch (type){
+                case knight:
+                    return getResources().getDrawable(R.drawable.knight_w);
+                case bishop:
+                    return getResources().getDrawable(R.drawable.bishop_w);
+                case rook:
+                    return getResources().getDrawable(R.drawable.rook_w);
+                case pawn:
+                    return getResources().getDrawable(R.drawable.pawn_w);
+                case queen:
+                    return getResources().getDrawable(R.drawable.queen_w);
+                case king:
+                    return getResources().getDrawable(R.drawable.king_w);
+                default:
+                    return getResources().getDrawable(R.drawable.knight_white);
+            }
+        }else{
+            switch (type){
+                case knight:
+                    return getResources().getDrawable(R.drawable.knight_b);
+                case bishop:
+                    return getResources().getDrawable(R.drawable.bishop_b);
+                case rook:
+                    return getResources().getDrawable(R.drawable.rook_b);
+                case pawn:
+                    return getResources().getDrawable(R.drawable.pawn_b);
+                case queen:
+                    return getResources().getDrawable(R.drawable.queen_b);
+                case king:
+                    return getResources().getDrawable(R.drawable.king_b);
+                default:
+                    return getResources().getDrawable(R.drawable.knight_white);
+            }
+        }
+
+    }
+
+    private void ChangePlayerColor(){
+        if(_currentPlayerColor == PieceColor.white){
+            _currentPlayerColor = PieceColor.black;
+        }else if(_currentPlayerColor == PieceColor.black){
+            _currentPlayerColor = PieceColor.white;
         }
     }
 

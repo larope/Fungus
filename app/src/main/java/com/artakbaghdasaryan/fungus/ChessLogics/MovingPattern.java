@@ -79,11 +79,13 @@ public class MovingPattern {
     public static MovingPattern whitePawnPattern = new MovingPattern(new Vector2Int[]{
             new Vector2Int(-1,1),
             new Vector2Int(0,1),
+            new Vector2Int(0,2),
             new Vector2Int(1,1)
     });
     public static MovingPattern blackPawnPattern = new MovingPattern(new Vector2Int[]{
             new Vector2Int(-1,-1),
             new Vector2Int(0,-1),
+            new Vector2Int(0,-2),
             new Vector2Int(1,-1)
     });
 }
