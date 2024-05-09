@@ -177,8 +177,6 @@ public class ChessGame extends AppCompatActivity {
 
         ChangePiece(new Vector2Int(3,7), Piece.BQueen);
         ChangePiece(new Vector2Int(4,7), Piece.BKing);
-
-
     }
 
     private void ChangePiece(Vector2Int position, Piece piece){
@@ -221,6 +219,12 @@ public class ChessGame extends AppCompatActivity {
             _availableCells.clear();
         }
 
+        if(_board.GetCell(position).piece.color != _currentPlayerColor){
+            _currentCell = Cell.Empty;
+            _availableCells.clear();
+            return;
+        }
+
         _availableCells = _board.GetAvailableMoves(_board.GetCell(position));
 
         if(_availableCells.size() == 0 && _board.GetCell(position).piece != Piece.Empty){
@@ -241,11 +245,6 @@ public class ChessGame extends AppCompatActivity {
         }
 
         _currentCell = _board.GetCell(position.x, position.y);
-
-
-
-
-
     }
 
     private Drawable GetDrawableForPiece(PieceType type, PieceColor color){
