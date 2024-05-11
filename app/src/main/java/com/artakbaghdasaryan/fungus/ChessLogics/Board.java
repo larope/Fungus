@@ -32,6 +32,11 @@ public class Board {
 
         return result;
     }
+
+    public ArrayList<Cell> GetAvailableMoves(MovingPattern pattern, Vector2Int position) {
+        return pattern.GetAvailableMoves(this, position);
+    }
+
     public boolean Move(Vector2Int from, Vector2Int to){
 
         return true;

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.MovingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
@@ -20,7 +21,7 @@ import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ChessGame extends AppCompatActivity {
+public class FungusMode extends AppCompatActivity {
     private final int boardSize = 8;
 
     private Board _board;
@@ -32,18 +33,16 @@ public class ChessGame extends AppCompatActivity {
 
     private ArrayList<Cell> _availableCells;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fungus_mode);
 
         _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
-        _currentCell = new Cell(0,0,CellColor.black,Piece.Empty);
+        _currentCell = new Cell(0,0, CellColor.black,Piece.Empty);
         _currentCell.position = Vector2Int.empty;
         _currentCell.piece = Piece.Empty;
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chess_game);
 
         _cellsToButtons = new HashMap<>();
         //TODO Починить говнокод
@@ -198,7 +197,9 @@ public class ChessGame extends AppCompatActivity {
     private void SelectCell(Vector2Int position){
         ReturnNormalColors();
 
-        if(_currentCell.piece.equals(Piece.Empty) && _board.GetCell(position).piece.color != _currentPlayerColor){
+        Cell selectedCell = _board.GetCell(position);
+
+        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor){
             return;
         }
 
@@ -212,7 +213,7 @@ public class ChessGame extends AppCompatActivity {
             for(int i = 0; i < _availableCells.size(); i++){
                 Vector2Int _selectedCellPosition = new Vector2Int(_currentCell.position.x, _currentCell.position.y);
                 Log.d("MALOG", _availableCells.get(i).position.x + " " + _availableCells.get(i).position.y + " : " + position.x + " " + position.y);
-                if(position.equals(_availableCells.get(i).position) && _board.GetCell(position).piece.color != _currentCell.piece.color){
+                if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
                     ChangePiece(position, _currentCell.piece);
                     ChangePiece(_selectedCellPosition, Piece.Empty);
                     ChangePlayerColor();
@@ -222,16 +223,25 @@ public class ChessGame extends AppCompatActivity {
             _availableCells.clear();
         }
 
-        if(_board.GetCell(position).piece.color != _currentPlayerColor){
+        if(selectedCell.piece.color != _currentPlayerColor){
             _currentCell = Cell.Empty;
             _availableCells.clear();
             return;
         }
 
-        _availableCells = _board.GetAvailableMoves(_board.GetCell(position));
+        if( selectedCell.piece.type != PieceType.pawn
+            && selectedCell.piece.type != PieceType.king
+            && selectedCell.piece.type != PieceType.queen
+        ) {
+            _availableCells = _board.GetAvailableMoves(GetPattern(selectedCell), position);
+        }else{
+            _availableCells = _board.GetAvailableMoves(selectedCell);
 
-        if(_availableCells.size() == 0 && _board.GetCell(position).piece != Piece.Empty){
-            if(_board.GetCell(position).color == CellColor.black){
+        }
+
+
+        if(_availableCells.size() == 0 && selectedCell.piece != Piece.Empty){
+            if(selectedCell.color == CellColor.black){
                 _cellsToButtons.get(position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
             }
             else{
@@ -308,5 +318,22 @@ public class ChessGame extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private MovingPattern GetPattern(Cell cell){
+        Vector2Int position = cell.position;
+
+        switch (position.x){
+            case 0: case 7:
+                return MovingPattern.rookPattern;
+            case 1: case 6:
+                return MovingPattern.knightPattern;
+            case 2: case 5:
+                return MovingPattern.bishopPattern;
+            case 3: case 4:
+                return cell.piece.pattern;
+        }
+
+        return  MovingPattern.whitePawnPattern;
     }
 }

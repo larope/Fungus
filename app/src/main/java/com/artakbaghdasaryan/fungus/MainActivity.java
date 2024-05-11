@@ -20,5 +20,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+        findViewById(R.id.fungusButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, FungusMode.class);
+                startActivity(myIntent);
+            }
+        });
     }
 }

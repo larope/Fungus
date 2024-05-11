@@ -17,6 +17,12 @@
             android:id="@+id/playButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Play" />
+            android:text="StandartMode" />
+
+        <Button
+            android:id="@+id/fungusButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="FungusMode" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
