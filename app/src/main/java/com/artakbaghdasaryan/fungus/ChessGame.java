@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.KingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
@@ -258,10 +259,10 @@ public class ChessGame extends AppCompatActivity {
 
 
         _availableCells = _board.GetAvailableMoves(selectedCell);
-        if(selectedCell.piece.type == PieceType.king){
-            if(_castlingAvailable.get(selectedCell.piece.color)[0]){
 
-            }
+        if(selectedCell.piece.type == PieceType.king){
+            KingPattern pattern = (KingPattern)selectedCell.piece.pattern;
+            _availableCells = pattern.GetAvailableSafeMoves(_board, position);
         }
 
         if(_availableCells.size() == 0 && selectedCell.piece != Piece.Empty){
@@ -342,5 +343,23 @@ public class ChessGame extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private boolean CastlingAvailable(PieceColor color, int side){
+        if(color == PieceColor.black){
+            if(_castlingAvailable.get(color)[side] == false){
+                return false;
+            }
+
+
+        }
+        else{
+            if(_castlingAvailable.get(color)[side] == false){
+                return false;
+            }
+
+
+        }
+        return true;
     }
 }

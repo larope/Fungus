@@ -29,7 +29,9 @@ public class Piece {
         this.pattern = pattern;
     }
 
-
+    public Piece Clone() {
+        return new Piece(type, color, pattern);
+    }
     public static final Piece Empty = new Piece(PieceType.empty);
 
     public static Piece WRook = new Piece(

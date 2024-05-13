@@ -65,16 +65,7 @@ public class MovingPattern {
 
     public static MovingPattern queenPattern = new QueenPattern();
 
-    public static MovingPattern kingPattern = new MovingPattern(new Vector2Int[]{
-            new Vector2Int(-1,-1),
-            new Vector2Int(-1,0),
-            new Vector2Int(-1,1),
-            new Vector2Int(1,1),
-            new Vector2Int(1,0),
-            new Vector2Int(1,-1),
-            new Vector2Int(0,-1),
-            new Vector2Int(0,1)
-    });
+    public static MovingPattern kingPattern = new KingPattern();
 
     public static MovingPattern whitePawnPattern = new MovingPattern(new Vector2Int[]{
             new Vector2Int(-1,1),

@@ -41,6 +41,9 @@ public class PawnPattern extends MovingPattern {
         if(!board.IsOutOfBoard(fromPosition.x, fromPosition.y+modifier) && board.GetCell(fromPosition.x, fromPosition.y+modifier).piece == Piece.Empty){
             available.add(board.GetCell(fromPosition.x, fromPosition.y+modifier));
         }
+        else{
+            return available;
+        }
         if(!board.IsOutOfBoard(fromPosition.x, fromPosition.y+modifier*2) && board.GetCell(fromPosition.x, fromPosition.y+modifier*2).piece == Piece.Empty){
             if(piece.color == PieceColor.white && fromPosition.y == 1){
                 available.add(board.GetCell(fromPosition.x, fromPosition.y+modifier*2));
