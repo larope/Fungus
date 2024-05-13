@@ -32,9 +32,13 @@ public class ChessGame extends AppCompatActivity {
 
     private ArrayList<Cell> _availableCells;
 
+    private HashMap<PieceColor, Boolean[]> _castlingAvailable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        _castlingAvailable = new HashMap<PieceColor, Boolean[]>();
+        _castlingAvailable.put(PieceColor.black, new Boolean[]{true,true});
+        _castlingAvailable.put(PieceColor.white, new Boolean[]{true,true});
 
         _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
@@ -198,7 +202,9 @@ public class ChessGame extends AppCompatActivity {
     private void SelectCell(Vector2Int position){
         ReturnNormalColors();
 
-        if(_currentCell.piece.equals(Piece.Empty) && _board.GetCell(position).piece.color != _currentPlayerColor){
+        Cell selectedCell = _board.GetCell(position);
+
+        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor){
             return;
         }
 
@@ -212,7 +218,29 @@ public class ChessGame extends AppCompatActivity {
             for(int i = 0; i < _availableCells.size(); i++){
                 Vector2Int _selectedCellPosition = new Vector2Int(_currentCell.position.x, _currentCell.position.y);
                 Log.d("MALOG", _availableCells.get(i).position.x + " " + _availableCells.get(i).position.y + " : " + position.x + " " + position.y);
-                if(position.equals(_availableCells.get(i).position) && _board.GetCell(position).piece.color != _currentCell.piece.color){
+                if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
+                    if(selectedCell.piece.type == PieceType.king){
+                        _castlingAvailable.put(selectedCell.piece.color, new Boolean[]{false,false});
+                    }
+
+                    if(position.x == 0){
+                        _castlingAvailable.put(
+                                selectedCell.piece.color,
+                                new Boolean[]{
+                                        false,
+                                        _castlingAvailable.get(selectedCell.piece.color)[1]
+                                });
+                    }
+
+                    if(position.x == 0){
+                        _castlingAvailable.put(
+                                selectedCell.piece.color,
+                                new Boolean[]{
+                                        _castlingAvailable.get(selectedCell.piece.color)[0],
+                                        false
+                                });
+                    }
+
                     ChangePiece(position, _currentCell.piece);
                     ChangePiece(_selectedCellPosition, Piece.Empty);
                     ChangePlayerColor();
@@ -222,16 +250,22 @@ public class ChessGame extends AppCompatActivity {
             _availableCells.clear();
         }
 
-        if(_board.GetCell(position).piece.color != _currentPlayerColor){
+        if(selectedCell.piece.color != _currentPlayerColor){
             _currentCell = Cell.Empty;
             _availableCells.clear();
             return;
         }
 
-        _availableCells = _board.GetAvailableMoves(_board.GetCell(position));
 
-        if(_availableCells.size() == 0 && _board.GetCell(position).piece != Piece.Empty){
-            if(_board.GetCell(position).color == CellColor.black){
+        _availableCells = _board.GetAvailableMoves(selectedCell);
+        if(selectedCell.piece.type == PieceType.king){
+            if(_castlingAvailable.get(selectedCell.piece.color)[0]){
+
+            }
+        }
+
+        if(_availableCells.size() == 0 && selectedCell.piece != Piece.Empty){
+            if(selectedCell.color == CellColor.black){
                 _cellsToButtons.get(position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
             }
             else{

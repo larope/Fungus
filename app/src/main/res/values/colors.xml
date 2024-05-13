@@ -4,9 +4,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
 
-    <color name="cell_black_highlighted">#384c5e</color>
-    <color name="cell_black">#577590</color>
+    <color name="cell_black_highlighted">#2e1717</color><!--384c5e-->
+    <color name="cell_black">#4c2626</color><!--577590-->
 
-    <color name="cell_white_highlighted">#6b5521</color>
-    <color name="cell_white">#f9c74f</color>
+    <color name="cell_white_highlighted">#40251d</color><!--6b5521-->
+    <color name="cell_white">#784637</color><!--f9c74f-->
 </resources>

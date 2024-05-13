@@ -85,11 +85,11 @@ public class Piece {
     public static Piece WPawn = new Piece(
             PieceType.pawn,
             PieceColor.white,
-            MovingPattern.whitePawnPattern
+            MovingPattern.pawnPattern
     );
     public static Piece BPawn = new Piece(
             PieceType.pawn,
             PieceColor.black,
-            MovingPattern.blackPawnPattern
+            MovingPattern.pawnPattern
     );
 }
