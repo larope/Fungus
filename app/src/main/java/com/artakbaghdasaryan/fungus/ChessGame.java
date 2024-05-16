@@ -13,9 +13,11 @@ import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.KingPattern;
+import com.artakbaghdasaryan.fungus.ChessLogics.Move;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
+import com.artakbaghdasaryan.fungus.ChessLogics.RookPattern;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 
 import java.util.ArrayList;
@@ -49,6 +51,14 @@ public class ChessGame extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess_game);
+
+        findViewById(R.id.unMove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MALOG", "UNMOVE!!!!");
+                UnMove();
+            }
+        });
 
         _cellsToButtons = new HashMap<>();
         //TODO Починить говнокод
@@ -241,9 +251,7 @@ public class ChessGame extends AppCompatActivity {
                                         false
                                 });
                     }
-
-                    ChangePiece(position, _currentCell.piece);
-                    ChangePiece(_selectedCellPosition, Piece.Empty);
+                    Move(_selectedCellPosition, position);
                     ChangePlayerColor();
                     return;
                 }
@@ -259,9 +267,13 @@ public class ChessGame extends AppCompatActivity {
 
 
         _availableCells = _board.GetAvailableMoves(selectedCell);
+        _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
 
         if(selectedCell.piece.type == PieceType.king){
             KingPattern pattern = (KingPattern)selectedCell.piece.pattern;
+            _availableCells = pattern.GetAvailableSafeMoves(_board, position);
+        }else if(selectedCell.piece.type == PieceType.rook){
+            RookPattern pattern = (RookPattern)selectedCell.piece.pattern;
             _availableCells = pattern.GetAvailableSafeMoves(_board, position);
         }
 
@@ -283,6 +295,50 @@ public class ChessGame extends AppCompatActivity {
         }
 
         _currentCell = _board.GetCell(position.x, position.y);
+    }
+
+    private void Move(Vector2Int selectedCellPosition, Vector2Int position) {
+        _board.Move(selectedCellPosition, position);
+
+
+        Piece piece = _board.GetCell(position).piece;
+
+        _cellsToButtons.get(selectedCellPosition).setImageDrawable(null);
+        if(piece == Piece.Empty){
+            _cellsToButtons.get(position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(piece.type, piece.color));
+        }
+    }
+
+    private void UnMove() {
+        Move lastMove = _board.GetLastMove();
+
+        if(lastMove == Move.Empty) {
+            return;
+        }
+
+        _cellsToButtons.get(lastMove.from.position).setImageDrawable(null);
+
+        Log.d("MALOG", lastMove.from.position.x + " " + lastMove.from.position.y + " " + lastMove.to.position.x + " " + lastMove.to.position.y);
+        if(lastMove.fromPiece == Piece.Empty){
+            _cellsToButtons.get(lastMove.from.position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(lastMove.from.position).setImageDrawable(GetDrawableForPiece(lastMove.fromPiece.type, lastMove.fromPiece.color));
+        }
+
+        _cellsToButtons.get(lastMove.to.position).setImageDrawable(null);
+        if(lastMove.toPiece == Piece.Empty){
+            _cellsToButtons.get(lastMove.to.position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(lastMove.to.position).setImageDrawable(GetDrawableForPiece(lastMove.toPiece.type, lastMove.toPiece.color));
+        }
+
+        _board.UnMove();
+        ChangePlayerColor();
     }
 
     private Drawable GetDrawableForPiece(PieceType type, PieceColor color){

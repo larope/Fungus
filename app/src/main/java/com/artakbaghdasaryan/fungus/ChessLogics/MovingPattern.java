@@ -48,6 +48,33 @@ public class MovingPattern {
         return available;
     }
 
+    public ArrayList<Cell> GetAvailableSafeMoves(Board board, Vector2Int fromPosition) {
+        Piece piece = board.GetCell(fromPosition).piece;
+        PieceColor color = piece.color;
+        PieceColor opponentColor = color == PieceColor.white ? PieceColor.black : PieceColor.white;
+        Vector2Int kingPosition = board.GetKingPosition(color);
+
+
+        ArrayList<Cell> available = GetAvailableMoves(board, fromPosition);
+        ArrayList<Cell> finalAvailable = new ArrayList<Cell>();
+
+        ArrayList<Cell> opponentMoves = board.GetAllAvailableMoves(opponentColor);
+
+
+        for(Cell cell : available) {
+            Vector2Int position = new Vector2Int(cell.position.x, cell.position.y);
+            board.Move(fromPosition, position);
+
+            opponentMoves = board.GetAllAvailableMoves(opponentColor);
+            if(!opponentMoves.contains(board.GetCell(kingPosition))){
+                finalAvailable.add(board.GetCell(position));
+            }
+
+            board.UnMove();
+        }
+        return finalAvailable;
+    }
+
     public static MovingPattern rookPattern = new RookPattern();
 
     public static MovingPattern bishopPattern = new BishopPattern();

@@ -15,6 +15,8 @@ public class Board {
     private final ArrayList<Cell> _availableMovesBlack;
     private final ArrayList<Cell> _availableMovesWhite;
 
+    private Move _lastMove;
+
     public Board(Vector2Int boardSize, Cell[][] cells){
         _availableMovesBlack = new ArrayList<>();
         _availableMovesWhite = new ArrayList<>();
@@ -27,7 +29,7 @@ public class Board {
                 _cells[y][x] = cells[y][x];
             }
         }
-
+        _lastMove = Move.Empty;
         RefreshAvailableMoves();
     }
 
@@ -43,11 +45,6 @@ public class Board {
 
     public ArrayList<Cell> GetAvailableMoves(MovingPattern pattern, Vector2Int position) {
         return pattern.GetAvailableMoves(this, position);
-    }
-
-    public boolean Move(Vector2Int from, Vector2Int to){
-
-        return true;
     }
 
     public boolean IsOutOfBoard(Vector2Int cellPosition){
@@ -168,5 +165,37 @@ public class Board {
                 }
             }
         }
+    }
+
+    public Vector2Int GetKingPosition(PieceColor color) {
+        for(Cell[] line : _cells){
+            for(Cell cell : line){
+                if (cell.piece != Piece.Empty && cell.piece.color == color && cell.piece.type == PieceType.king) {
+                    return cell.position;
+                }
+            }
+        }
+        return Vector2Int.empty;
+    }
+
+    public void Move(Vector2Int from, Vector2Int to){
+        _lastMove = new Move(GetCell(from), GetCell(to));
+
+        GetCell(to).piece = GetCell(from).piece;
+        GetCell(from).piece = Piece.Empty;
+
+        RefreshAvailableMoves();
+    }
+
+    public void UnMove(){
+        if(_lastMove != Move.Empty){
+            GetCell(_lastMove.from.position).piece = _lastMove.from.piece;
+            GetCell(_lastMove.to.position).piece = _lastMove.to.piece;
+            _lastMove = Move.Empty;
+        }
+    }
+
+    public Move GetLastMove(){
+        return _lastMove;
     }
 }

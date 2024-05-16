@@ -89,4 +89,6 @@ public class RookPattern extends MovingPattern {
 
         return available;
     }
+
+
 }
