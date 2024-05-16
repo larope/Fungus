@@ -52,7 +52,7 @@ public class MovingPattern {
         Piece piece = board.GetCell(fromPosition).piece;
         PieceColor color = piece.color;
         PieceColor opponentColor = color == PieceColor.white ? PieceColor.black : PieceColor.white;
-        Vector2Int kingPosition = board.GetKingPosition(color);
+        Vector2Int kingPosition;
 
 
         ArrayList<Cell> available = GetAvailableMoves(board, fromPosition);
@@ -64,7 +64,9 @@ public class MovingPattern {
         for(Cell cell : available) {
             Vector2Int position = new Vector2Int(cell.position.x, cell.position.y);
             board.Move(fromPosition, position);
+            kingPosition = board.GetKingPosition(color);
 
+            board.RefreshAvailableMoves();
             opponentMoves = board.GetAllAvailableMoves(opponentColor);
             if(!opponentMoves.contains(board.GetCell(kingPosition))){
                 finalAvailable.add(board.GetCell(position));

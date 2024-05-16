@@ -12,10 +12,13 @@ import android.widget.ImageView;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.KingPattern;
+import com.artakbaghdasaryan.fungus.ChessLogics.Move;
 import com.artakbaghdasaryan.fungus.ChessLogics.MovingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
+import com.artakbaghdasaryan.fungus.ChessLogics.RookPattern;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 
 import java.util.ArrayList;
@@ -36,14 +39,85 @@ public class FungusMode extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fungus_mode);
+        setContentView(R.layout.activity_chess_game);
 
         _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
-        _currentCell = new Cell(0,0, CellColor.black,Piece.Empty);
+        _currentCell = new Cell(0,0,CellColor.black,Piece.Empty);
         _currentCell.position = Vector2Int.empty;
         _currentCell.piece = Piece.Empty;
 
+
+        GetButtons();
+        Log.d("MALOG",  _currentCell.position.x + " " + _currentCell.position.y);
+
+        Cell[][] cells = new Cell[boardSize][boardSize];
+        int num = 0;
+
+        for(int y = 0; y < boardSize; y++){
+            for(int x = 0; x < boardSize; x++){
+                CellColor color;
+                if((y+x)%2 == 0) {
+                    color = CellColor.white;
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_white));
+                }else{
+                    color = CellColor.black;
+                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_black));
+                }
+                cells[y][x] = new Cell(x, y, color, Piece.Empty);
+
+                int finalX = x;
+                int finalY = y;
+
+                _cellsToButtons.get(new Vector2Int(x,y)).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                _cellsToButtons.get(new Vector2Int(x, y)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SelectCell(new Vector2Int(finalX, finalY));
+                    }
+                });
+                num++;
+            }
+        }
+
+        SetUpBoard(cells);
+    }
+
+    private void SetUpBoard(Cell[][] cells) {
+        _board = new Board(new Vector2Int(boardSize,boardSize), cells);
+
+        for(int i = 0; i < 8; i++){
+            ChangePiece(new Vector2Int(i,1), Piece.WPawn);
+            ChangePiece(new Vector2Int(i,6), Piece.BPawn);
+        }
+
+        ChangePiece(new Vector2Int(0,0), Piece.WRook);
+        ChangePiece(new Vector2Int(7,0), Piece.WRook);
+
+        ChangePiece(new Vector2Int(1,0), Piece.WKnight);
+        ChangePiece(new Vector2Int(6,0), Piece.WKnight);
+
+        ChangePiece(new Vector2Int(2,0), Piece.WBishop);
+        ChangePiece(new Vector2Int(5,0), Piece.WBishop);
+
+        ChangePiece(new Vector2Int(3,0), Piece.WQueen);
+        ChangePiece(new Vector2Int(4,0), Piece.WKing);
+
+
+        ChangePiece(new Vector2Int(0,7), Piece.BRook);
+        ChangePiece(new Vector2Int(7,7), Piece.BRook);
+
+        ChangePiece(new Vector2Int(1,7), Piece.BKnight);
+        ChangePiece(new Vector2Int(6,7), Piece.BKnight);
+
+        ChangePiece(new Vector2Int(2,7), Piece.BBishop);
+        ChangePiece(new Vector2Int(5,7), Piece.BBishop);
+
+        ChangePiece(new Vector2Int(3,7), Piece.BQueen);
+        ChangePiece(new Vector2Int(4,7), Piece.BKing);
+    }
+
+    private void GetButtons() {
         _cellsToButtons = new HashMap<>();
         //TODO Починить говнокод
         _cellsToButtons.put(new Vector2Int(0,0), (ImageButton) findViewById(R.id.cell11));
@@ -117,68 +191,6 @@ public class FungusMode extends AppCompatActivity {
         _cellsToButtons.put(new Vector2Int(5,7), (ImageButton) findViewById(R.id.cell86));
         _cellsToButtons.put(new Vector2Int(6,7), (ImageButton) findViewById(R.id.cell87));
         _cellsToButtons.put(new Vector2Int(7,7), (ImageButton) findViewById(R.id.cell88));
-        Log.d("MALOG",  _currentCell.position.x + " " + _currentCell.position.y);
-
-        Cell[][] cells = new Cell[boardSize][boardSize];
-        int num = 0;
-
-        for(int y = 0; y < boardSize; y++){
-            for(int x = 0; x < boardSize; x++){
-                CellColor color;
-                if((y+x)%2 == 0) {
-                    color = CellColor.white;
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_white));
-                }else{
-                    color = CellColor.black;
-                    _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_black));
-                }
-                cells[y][x] = new Cell(x, y, color, Piece.Empty);
-
-                int finalX = x;
-                int finalY = y;
-
-                _cellsToButtons.get(new Vector2Int(x,y)).setScaleType(ImageView.ScaleType.FIT_CENTER);
-                _cellsToButtons.get(new Vector2Int(x, y)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        SelectCell(new Vector2Int(finalX, finalY));
-                    }
-                });
-                num++;
-            }
-        }
-
-        _board = new Board(new Vector2Int(boardSize,boardSize), cells);
-
-        for(int i = 0; i < 8; i++){
-            ChangePiece(new Vector2Int(i,1), Piece.WPawn);
-            ChangePiece(new Vector2Int(i,6), Piece.BPawn);
-        }
-
-        ChangePiece(new Vector2Int(0,0), Piece.WRook);
-        ChangePiece(new Vector2Int(7,0), Piece.WRook);
-
-        ChangePiece(new Vector2Int(1,0), Piece.WKnight);
-        ChangePiece(new Vector2Int(6,0), Piece.WKnight);
-
-        ChangePiece(new Vector2Int(2,0), Piece.WBishop);
-        ChangePiece(new Vector2Int(5,0), Piece.WBishop);
-
-        ChangePiece(new Vector2Int(3,0), Piece.WQueen);
-        ChangePiece(new Vector2Int(4,0), Piece.WKing);
-
-
-        ChangePiece(new Vector2Int(0,7), Piece.BRook);
-        ChangePiece(new Vector2Int(7,7), Piece.BRook);
-
-        ChangePiece(new Vector2Int(1,7), Piece.BKnight);
-        ChangePiece(new Vector2Int(6,7), Piece.BKnight);
-
-        ChangePiece(new Vector2Int(2,7), Piece.BBishop);
-        ChangePiece(new Vector2Int(5,7), Piece.BBishop);
-
-        ChangePiece(new Vector2Int(3,7), Piece.BQueen);
-        ChangePiece(new Vector2Int(4,7), Piece.BKing);
     }
 
     private void ChangePiece(Vector2Int position, Piece piece){
@@ -212,10 +224,9 @@ public class FungusMode extends AppCompatActivity {
         else if(_currentCell.piece != Piece.Empty && _availableCells.size() > 0 && _currentCell.piece.color == _currentPlayerColor){
             for(int i = 0; i < _availableCells.size(); i++){
                 Vector2Int _selectedCellPosition = new Vector2Int(_currentCell.position.x, _currentCell.position.y);
-                Log.d("MALOG", _availableCells.get(i).position.x + " " + _availableCells.get(i).position.y + " : " + position.x + " " + position.y);
+
                 if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
-                    ChangePiece(position, _currentCell.piece);
-                    ChangePiece(_selectedCellPosition, Piece.Empty);
+                    Move(_selectedCellPosition, position);
                     ChangePlayerColor();
                     return;
                 }
@@ -229,18 +240,20 @@ public class FungusMode extends AppCompatActivity {
             return;
         }
 
+        _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
+
         if( selectedCell.piece.type != PieceType.pawn
-            && selectedCell.piece.type != PieceType.king
-            && selectedCell.piece.type != PieceType.queen
+                && selectedCell.piece.type != PieceType.king
+                && selectedCell.piece.type != PieceType.queen
         ) {
-            _availableCells = _board.GetAvailableMoves(GetPattern(selectedCell), position);
+            _board.GetCell(position).piece.pattern = GetPattern(_board.GetCell(position));
+            _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
         }else{
-            _availableCells = _board.GetAvailableMoves(selectedCell);
+            _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
 
         }
 
-
-        if(_availableCells.size() == 0 && selectedCell.piece != Piece.Empty){
+        if(_availableCells.isEmpty() && selectedCell.piece != Piece.Empty){
             if(selectedCell.color == CellColor.black){
                 _cellsToButtons.get(position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
             }
@@ -258,6 +271,67 @@ public class FungusMode extends AppCompatActivity {
         }
 
         _currentCell = _board.GetCell(position.x, position.y);
+    }
+
+    private void Move(Vector2Int selectedCellPosition, Vector2Int position) {
+        _board.Move(selectedCellPosition, position);
+
+
+        Piece piece = _board.GetCell(position).piece;
+
+        _cellsToButtons.get(selectedCellPosition).setImageDrawable(null);
+        if(piece == Piece.Empty){
+            _cellsToButtons.get(position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(piece.type, piece.color));
+        }
+        RefreshImages();
+    }
+
+    private void RefreshImages(){
+        for(int y = 0; y < _board.GetSize().y; y++){
+            for(int x = 0; x < _board.GetSize().x; x++){
+                Vector2Int position = new Vector2Int(x,y);
+                Piece piece = _board.GetCell(position).piece;
+
+                if(piece == Piece.Empty){
+                    _cellsToButtons.get(position).setImageDrawable(null);
+                }
+                else{
+                    _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(piece.type, piece.color));
+                }
+            }
+        }
+    }
+
+    private void UnMove() {
+        Move lastMove = _board.GetLastMove();
+
+        if(lastMove == Move.Empty) {
+            return;
+        }
+
+        _cellsToButtons.get(lastMove.from.position).setImageDrawable(null);
+
+        Log.d("MALOG", lastMove.from.position.x + " " + lastMove.from.position.y + " " + lastMove.to.position.x + " " + lastMove.to.position.y);
+        if(lastMove.fromPiece == Piece.Empty){
+            _cellsToButtons.get(lastMove.from.position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(lastMove.from.position).setImageDrawable(GetDrawableForPiece(lastMove.fromPiece.type, lastMove.fromPiece.color));
+        }
+
+        _cellsToButtons.get(lastMove.to.position).setImageDrawable(null);
+        if(lastMove.toPiece == Piece.Empty){
+            _cellsToButtons.get(lastMove.to.position).setImageDrawable(null);
+        }
+        else{
+            _cellsToButtons.get(lastMove.to.position).setImageDrawable(GetDrawableForPiece(lastMove.toPiece.type, lastMove.toPiece.color));
+        }
+
+        _board.UnMove();
+        ChangePlayerColor();
     }
 
     private Drawable GetDrawableForPiece(PieceType type, PieceColor color){
