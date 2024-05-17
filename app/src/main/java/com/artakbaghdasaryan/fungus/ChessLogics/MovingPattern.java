@@ -77,6 +77,23 @@ public class MovingPattern {
         return finalAvailable;
     }
 
+    public static MovingPattern GetPattern(PieceType type){
+        switch(type){
+            case rook:
+                return rookPattern;
+            case bishop:
+                return bishopPattern;
+            case knight:
+                return knightPattern;
+            case queen:
+                return queenPattern;
+            case king:
+                return kingPattern;
+            default:
+                return whitePawnPattern;
+        }
+    }
+
     public static MovingPattern rookPattern = new RookPattern();
 
     public static MovingPattern bishopPattern = new BishopPattern();

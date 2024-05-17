@@ -300,7 +300,6 @@ public class Board {
 
         Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
         Move(RookPositionsBefore.get(color), RookPositionsAfter.get(color));
-        Log.d("MALOG", "QUEENCATLEING");
     }
 
     public boolean IsCastlingAvailableKingSide(PieceColor color){
@@ -316,7 +315,7 @@ public class Board {
         ){
             return true;
         }
-        Log.d("MALOG", "KINGSIDE" + !_kingRookMoved.get(color) + " " + !_kingMoved.get(color) + " " +  (GetCell(5, lineForColor.get(color)).piece.type == PieceType.empty) + " " + (GetCell(6, lineForColor.get(color)).piece.type == PieceType.empty));
+
         return false;
     }
 

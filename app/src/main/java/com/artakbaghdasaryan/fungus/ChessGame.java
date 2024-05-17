@@ -50,16 +50,36 @@ public class ChessGame extends AppCompatActivity {
     private static final long TIMER_DURATION = 60000; // Timer duration in milliseconds (adjust as needed)
 
     private boolean _isFirstMove = true;
+    private boolean _isPromotionMove = false;
+    private Vector2Int _promotionPosition;
+
+    private HashMap<PieceType, ImageButton> _promotionButtons;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess_game);
 
+        _promotionButtons = new HashMap<>();
+        _promotionButtons.put(PieceType.queen, (ImageButton) findViewById(R.id.promoteQueen));
+        _promotionButtons.put(PieceType.rook, (ImageButton) findViewById(R.id.promoteRook));
+        _promotionButtons.put(PieceType.bishop, (ImageButton) findViewById(R.id.promoteBishop));
+        _promotionButtons.put(PieceType.knight, (ImageButton) findViewById(R.id.promoteKnight));
+
+        for(PieceType key : _promotionButtons.keySet()){
+            final PieceType param = key;
+            _promotionButtons.get(key).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Promote(param);
+                }
+            });
+        }
+
+        DisablePromotionUI();
+
         SetUpTimer();
-
-        //handler.removeCallbacks(runnable); // This will stop the timer
-
 
         _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
@@ -68,7 +88,6 @@ public class ChessGame extends AppCompatActivity {
         _currentCell.piece = Piece.Empty;
 
         GetButtons();
-        Log.d("MALOG",  _currentCell.position.x + " " + _currentCell.position.y);
 
         Cell[][] cells = new Cell[boardSize][boardSize];
 
@@ -98,6 +117,30 @@ public class ChessGame extends AppCompatActivity {
         }
 
         SetUpBoard(cells);
+    }
+
+    private void EnablePromotionUI() {
+        int i = 0;
+
+        for(PieceType key : _promotionButtons.keySet()){
+            _promotionButtons.get(key).setVisibility(View.VISIBLE);
+            _promotionButtons.get(key).setImageDrawable(GetDrawableForPiece(key, _currentPlayerColor));
+            _promotionButtons.get(key).setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            if(i%2==0) {
+                _promotionButtons.get(key).setBackgroundColor(getResources().getColor(R.color.cell_white));
+            }
+            else {
+                _promotionButtons.get(key).setBackgroundColor(getResources().getColor(R.color.cell_black));
+            }
+
+            i++;
+        }
+    }
+    private void DisablePromotionUI(){
+        for(PieceType key : _promotionButtons.keySet()){
+            _promotionButtons.get(key).setVisibility(View.INVISIBLE);
+        }
     }
 
     private void SetUpTimer() {
@@ -131,6 +174,7 @@ public class ChessGame extends AppCompatActivity {
     }
 
     private void TimeLose(PieceColor currentPlayerColor) {
+        //handler.removeCallbacks(runnable); This will stop the timer
 
     }
 
@@ -262,7 +306,7 @@ public class ChessGame extends AppCompatActivity {
 
         Cell selectedCell = _board.GetCell(position);
 
-        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor){
+        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor || _isPromotionMove){
             return;
         }
 
@@ -278,7 +322,6 @@ public class ChessGame extends AppCompatActivity {
 
                 if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
                     Move(_selectedCellPosition, position);
-                    ChangePlayerColor();
                     return;
                 }
             }
@@ -320,19 +363,36 @@ public class ChessGame extends AppCompatActivity {
             _isFirstMove = false;
         }
 
+        if(_isPromotionMove){
+            return;
+        }
+
+        Piece piece = _board.GetCell(selectedCellPosition).piece;
+        PieceColor color = piece.color;
+        PieceColor opponentColor = color == PieceColor.white ? PieceColor.black : PieceColor.white;
+
+        if(piece.type == PieceType.pawn && position.y == _board.GetLine().get(opponentColor)){
+            _board.Move(selectedCellPosition, position);
+            _isPromotionMove = true;
+            _promotionPosition = position;
+            EnablePromotionUI();
+
+            return;
+        }
+
         _board.Move(selectedCellPosition, position);
 
-
-        Piece piece = _board.GetCell(position).piece;
-
-        _cellsToButtons.get(selectedCellPosition).setImageDrawable(null);
-        if(piece == Piece.Empty){
-            _cellsToButtons.get(position).setImageDrawable(null);
-        }
-        else{
-            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(piece.type, piece.color));
-        }
+        ChangePlayerColor();
         RefreshImages();
+    }
+
+    private void Promote(PieceType type) {
+        _board.GetCell(_promotionPosition).piece = Piece.GetPiece(type, _currentPlayerColor);
+        _isPromotionMove = false;
+
+        RefreshImages();
+        DisablePromotionUI();
+        ChangePlayerColor();
     }
 
     private void RefreshImages(){
@@ -416,7 +476,6 @@ public class ChessGame extends AppCompatActivity {
                     return getResources().getDrawable(R.drawable.knight_white);
             }
         }
-
     }
 
     private void ChangePlayerColor(){
@@ -455,5 +514,16 @@ public class ChessGame extends AppCompatActivity {
         }
 
         return  MovingPattern.whitePawnPattern;
+    }
+
+    private void UpdatePattern(Vector2Int position) {
+        Cell selectedCell = _board.GetCell(position);
+
+        if( selectedCell.piece.type != PieceType.pawn
+                && selectedCell.piece.type != PieceType.king
+                && selectedCell.piece.type != PieceType.queen
+        ) {
+            _board.GetCell(position).piece.pattern = GetPattern(_board.GetCell(position));
+        }
     }
 }

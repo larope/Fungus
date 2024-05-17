@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
@@ -18,7 +20,9 @@ import com.artakbaghdasaryan.fungus.ChessLogics.MovingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
+import com.artakbaghdasaryan.fungus.ChessLogics.Player;
 import com.artakbaghdasaryan.fungus.ChessLogics.RookPattern;
+import com.artakbaghdasaryan.fungus.Util.Timer;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 
 import java.util.ArrayList;
@@ -36,10 +40,46 @@ public class FungusMode extends AppCompatActivity {
 
     private ArrayList<Cell> _availableCells;
 
+    private HashMap<PieceColor, Long> _timers;
+    private HashMap<PieceColor, TextView> _timerUI;
+
+    private Handler handler;
+    private Runnable runnable;
+    private long startTimeMillis;
+    private static final long TIMER_INTERVAL = 100; // Timer interval in milliseconds (adjust as needed)
+    private static final long TIMER_DURATION = 60000; // Timer duration in milliseconds (adjust as needed)
+
+    private boolean _isFirstMove = true;
+    private boolean _isPromotionMove = false;
+    private Vector2Int _promotionPosition;
+
+    private HashMap<PieceType, ImageButton> _promotionButtons;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess_game);
+
+        _promotionButtons = new HashMap<>();
+        _promotionButtons.put(PieceType.queen, (ImageButton) findViewById(R.id.promoteQueen));
+        _promotionButtons.put(PieceType.rook, (ImageButton) findViewById(R.id.promoteRook));
+        _promotionButtons.put(PieceType.bishop, (ImageButton) findViewById(R.id.promoteBishop));
+        _promotionButtons.put(PieceType.knight, (ImageButton) findViewById(R.id.promoteKnight));
+
+        for(PieceType key : _promotionButtons.keySet()){
+            final PieceType param = key;
+            _promotionButtons.get(key).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Promote(param);
+                }
+            });
+        }
+
+        DisablePromotionUI();
+
+        SetUpTimer();
 
         _currentPlayerColor = PieceColor.white;
         _availableCells = new ArrayList<Cell>();
@@ -47,12 +87,9 @@ public class FungusMode extends AppCompatActivity {
         _currentCell.position = Vector2Int.empty;
         _currentCell.piece = Piece.Empty;
 
-
         GetButtons();
-        Log.d("MALOG",  _currentCell.position.x + " " + _currentCell.position.y);
 
         Cell[][] cells = new Cell[boardSize][boardSize];
-        int num = 0;
 
         for(int y = 0; y < boardSize; y++){
             for(int x = 0; x < boardSize; x++){
@@ -76,11 +113,69 @@ public class FungusMode extends AppCompatActivity {
                         SelectCell(new Vector2Int(finalX, finalY));
                     }
                 });
-                num++;
             }
         }
 
         SetUpBoard(cells);
+    }
+
+    private void EnablePromotionUI() {
+        int i = 0;
+
+        for(PieceType key : _promotionButtons.keySet()){
+            _promotionButtons.get(key).setVisibility(View.VISIBLE);
+            _promotionButtons.get(key).setImageDrawable(GetDrawableForPiece(key, _currentPlayerColor));
+            _promotionButtons.get(key).setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            if(i%2==0) {
+                _promotionButtons.get(key).setBackgroundColor(getResources().getColor(R.color.cell_white));
+            }
+            else {
+                _promotionButtons.get(key).setBackgroundColor(getResources().getColor(R.color.cell_black));
+            }
+
+            i++;
+        }
+    }
+    private void DisablePromotionUI(){
+        for(PieceType key : _promotionButtons.keySet()){
+            _promotionButtons.get(key).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void SetUpTimer() {
+        _timers = new HashMap<>();
+        _timers.put(PieceColor.white, 180000L);
+        _timers.put(PieceColor.black, 180000L);
+
+        _timerUI = new HashMap<>();
+        _timerUI.put(PieceColor.white, findViewById(R.id.timer1));
+        _timerUI.put(PieceColor.black, findViewById(R.id.timer2));
+
+        _timerUI.get(PieceColor.white).setText(Timer.FormatTime(_timers.get(PieceColor.white)));
+        _timerUI.get(PieceColor.black).setText(Timer.FormatTime(_timers.get(PieceColor.black)));
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (_timers.get(_currentPlayerColor) > 0) {
+                    _timers.put(_currentPlayerColor, _timers.get(_currentPlayerColor)-TIMER_INTERVAL);
+                    _timerUI.get(_currentPlayerColor).setText(Timer.FormatTime(_timers.get(_currentPlayerColor)));
+
+                    handler.postDelayed(this, TIMER_INTERVAL);
+                } else {
+                    TimeLose(_currentPlayerColor);
+                }
+            }
+        };
+
+        startTimeMillis = System.currentTimeMillis();
+    }
+
+    private void TimeLose(PieceColor currentPlayerColor) {
+        //handler.removeCallbacks(runnable); This will stop the timer
+
     }
 
     private void SetUpBoard(Cell[][] cells) {
@@ -211,7 +306,7 @@ public class FungusMode extends AppCompatActivity {
 
         Cell selectedCell = _board.GetCell(position);
 
-        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor){
+        if(_currentCell.piece.equals(Piece.Empty) && selectedCell.piece.color != _currentPlayerColor || _isPromotionMove){
             return;
         }
 
@@ -227,7 +322,6 @@ public class FungusMode extends AppCompatActivity {
 
                 if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
                     Move(_selectedCellPosition, position);
-                    ChangePlayerColor();
                     return;
                 }
             }
@@ -240,18 +334,10 @@ public class FungusMode extends AppCompatActivity {
             return;
         }
 
+        UpdatePattern(selectedCell);
+        _board.RefreshAvailableMoves();
+
         _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
-
-        if( selectedCell.piece.type != PieceType.pawn
-                && selectedCell.piece.type != PieceType.king
-                && selectedCell.piece.type != PieceType.queen
-        ) {
-            _board.GetCell(position).piece.pattern = GetPattern(_board.GetCell(position));
-            _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
-        }else{
-            _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
-
-        }
 
         if(_availableCells.isEmpty() && selectedCell.piece != Piece.Empty){
             if(selectedCell.color == CellColor.black){
@@ -274,19 +360,46 @@ public class FungusMode extends AppCompatActivity {
     }
 
     private void Move(Vector2Int selectedCellPosition, Vector2Int position) {
+        if(_isFirstMove){
+            handler.postDelayed(runnable, TIMER_INTERVAL);
+            _isFirstMove = false;
+        }
+
+        if(_isPromotionMove){
+            return;
+        }
+
+        Piece piece = _board.GetCell(selectedCellPosition).piece;
+        PieceColor color = piece.color;
+        PieceColor opponentColor = color == PieceColor.white ? PieceColor.black : PieceColor.white;
+
+        if(piece.type == PieceType.pawn && position.y == _board.GetLine().get(opponentColor)){
+            _board.Move(selectedCellPosition, position);
+            _isPromotionMove = true;
+            _promotionPosition = position;
+            EnablePromotionUI();
+
+            return;
+        }
+
         _board.Move(selectedCellPosition, position);
 
+        UpdatePattern(_board.GetCell(position));
+        _board.RefreshAvailableMoves();
 
-        Piece piece = _board.GetCell(position).piece;
-
-        _cellsToButtons.get(selectedCellPosition).setImageDrawable(null);
-        if(piece == Piece.Empty){
-            _cellsToButtons.get(position).setImageDrawable(null);
-        }
-        else{
-            _cellsToButtons.get(position).setImageDrawable(GetDrawableForPiece(piece.type, piece.color));
-        }
+        ChangePlayerColor();
         RefreshImages();
+
+        Log.d("MALOG", piece.type.toString() + " : " + piece.pattern);
+    }
+
+    private void Promote(PieceType type) {
+        _board.GetCell(_promotionPosition).piece = Piece.GetPiece(type, _currentPlayerColor);
+        _isPromotionMove = false;
+
+        RefreshImages();
+        DisablePromotionUI();
+        ChangePlayerColor();
     }
 
     private void RefreshImages(){
@@ -370,7 +483,6 @@ public class FungusMode extends AppCompatActivity {
                     return getResources().getDrawable(R.drawable.knight_white);
             }
         }
-
     }
 
     private void ChangePlayerColor(){
@@ -405,9 +517,19 @@ public class FungusMode extends AppCompatActivity {
             case 2: case 5:
                 return MovingPattern.bishopPattern;
             case 3: case 4:
-                return cell.piece.pattern;
+                return MovingPattern.GetPattern(cell.piece.type);
+
         }
 
         return  MovingPattern.whitePawnPattern;
+    }
+
+    private void UpdatePattern(Cell selectedCell) {
+        if(selectedCell.piece.type != PieceType.pawn
+                && selectedCell.piece.type != PieceType.king
+                && selectedCell.piece.type != PieceType.queen
+        ) {
+            selectedCell.piece.pattern = GetPattern(selectedCell);
+        }
     }
 }

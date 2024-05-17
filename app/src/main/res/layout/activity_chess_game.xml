@@ -661,21 +661,37 @@
 
             <ImageButton
                 android:id="@+id/promoteQueen"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text=""
+                app:cornerRadius="0dp"
                 android:layout_width="50sp"
                 android:layout_height="50sp" />
 
             <ImageButton
                 android:id="@+id/promoteRook"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text=""
+                app:cornerRadius="0dp"
                 android:layout_width="50sp"
                 android:layout_height="50sp" />
 
             <ImageButton
                 android:id="@+id/promoteBishop"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text=""
+                app:cornerRadius="0dp"
                 android:layout_width="50sp"
                 android:layout_height="50sp" />
 
             <ImageButton
                 android:id="@+id/promoteKnight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text=""
+                app:cornerRadius="0dp"
                 android:layout_width="50sp"
                 android:layout_height="50sp" />
         </LinearLayout>

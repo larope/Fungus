@@ -2,6 +2,7 @@ package com.artakbaghdasaryan.fungus.ChessLogics;
 
 import android.graphics.drawable.Drawable;
 
+import com.artakbaghdasaryan.fungus.R;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 
 import java.util.ArrayList;
@@ -32,6 +33,45 @@ public class Piece {
     public Piece Clone() {
         return new Piece(type, color, pattern);
     }
+
+    public static Piece GetPiece(PieceType type, PieceColor color){
+        if(color == PieceColor.white){
+            switch (type){
+                case knight:
+                    return WKnight;
+                case bishop:
+                    return WBishop;
+                case rook:
+                    return WRook;
+                case pawn:
+                    return WPawn;
+                case queen:
+                    return WQueen;
+                case king:
+                    return WKing;
+                default:
+                    return Empty;
+            }
+        }else{
+            switch (type){
+                case knight:
+                    return BKnight;
+                case bishop:
+                    return BBishop;
+                case rook:
+                    return BRook;
+                case pawn:
+                    return BPawn;
+                case queen:
+                    return BQueen;
+                case king:
+                    return BKing;
+                default:
+                    return Empty;
+            }
+        }
+    }
+
     public static final Piece Empty = new Piece(PieceType.empty);
 
     public static Piece WRook = new Piece(
