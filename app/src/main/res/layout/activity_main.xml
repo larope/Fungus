@@ -6,23 +6,64 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="388dp"
-        android:orientation="vertical"
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_layout" />
+
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/menu"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        app:itemTextColor="@color/textWhiteLight"
+        android:foregroundTint="#FF0000"
+        app:itemBackground="@color/backgroundBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu">
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+<!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/playButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="StandartMode" />
+                <Button
+                    android:id="@+id/playButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="StandartMode" />
 
-        <Button
-            android:id="@+id/fungusButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="FungusMode" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/fungusButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="FungusMode" />
+    </LinearLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

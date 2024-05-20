@@ -10,4 +10,10 @@ public class Timer {
 
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
+
+    public static long ConvertToMilliseconds(int hours, int minutes, int seconds) {
+        // Calculate total milliseconds
+        long totalMilliseconds = (hours * 3600L + minutes * 60L + seconds) * 1000L;
+        return totalMilliseconds;
+    }
 }

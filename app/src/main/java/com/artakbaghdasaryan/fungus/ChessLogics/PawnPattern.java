@@ -10,22 +10,9 @@ public class PawnPattern extends MovingPattern {
     @Override
     public ArrayList<Cell> GetAvailableMoves(Board board, Vector2Int fromPosition) {
         ArrayList<Cell> available = new ArrayList<>();
-        Vector2Int boardSize = board.GetSize();
         Piece piece = board.GetCell(fromPosition).piece;
 
-        int modifier = 1;
-
-        if(piece.color == PieceColor.white){
-            modifier = 1;
-        }
-        else{
-            modifier = -1;
-        }
-//        new Vector2Int(-1,1)
-//        new Vector2Int(1,1)
-
-//        new Vector2Int(0,1)
-//        new Vector2Int(0,2)
+        int modifier = board.GetModifier(piece.color);
 
         if(
                 !board.IsOutOfBoard(fromPosition.x-1, fromPosition.y+modifier)
@@ -45,10 +32,7 @@ public class PawnPattern extends MovingPattern {
             return available;
         }
         if(!board.IsOutOfBoard(fromPosition.x, fromPosition.y+modifier*2) && board.GetCell(fromPosition.x, fromPosition.y+modifier*2).piece == Piece.Empty){
-            if(piece.color == PieceColor.white && fromPosition.y == 1){
-                available.add(board.GetCell(fromPosition.x, fromPosition.y+modifier*2));
-            }
-            else if(piece.color == PieceColor.black && fromPosition.y == 6){
+            if(fromPosition.y == board.GetLine().get(piece.color)+modifier){
                 available.add(board.GetCell(fromPosition.x, fromPosition.y+modifier*2));
             }
         }

@@ -4,9 +4,26 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
 
-    <color name="cell_black_highlighted">#2e1717</color><!--384c5e-->
-    <color name="cell_black">#4c2626</color><!--577590-->
+    <color name="textWhiteLight">#f0ebd8</color>
+    <color name="textWhite">#6e6c66</color>
 
-    <color name="cell_white_highlighted">#40251d</color><!--6b5521-->
-    <color name="cell_white">#784637</color><!--f9c74f-->
+    <color name="backgroundBlack">#2d3142</color>
+
+<!--    <color name="cell_black_highlighted">#2e1717</color>&lt;!&ndash;384c5e&ndash;&gt;-->
+<!--    <color name="cell_black">#4c2626</color>&lt;!&ndash;577590&ndash;&gt;-->
+
+<!--    <color name="cell_white_highlighted">#40251d</color>&lt;!&ndash;6b5521&ndash;&gt;-->
+<!--    <color name="cell_white">#784637</color>&lt;!&ndash;f9c74f&ndash;&gt;-->
+
+    <color name="cell_black_highlighted">#182329</color><!--384c5e-->
+    <color name="cell_black">#2f4550</color><!--577590-->
+
+    <color name="cell_white_highlighted">#52504b</color><!--6b5521-->
+    <color name="cell_white">#f0ebd8</color><!--f9c74f-->
+
+    <color name="btn_dark">#3D4665</color><!--f9c74f-->
+    <color name="btn_green">#344e41</color><!--f9c74f-->
+
+    <color name="last_move_white">#40584b</color><!--f9c74f-->
+    <color name="last_move_black">#324c42</color><!--f9c74f-->
 </resources>

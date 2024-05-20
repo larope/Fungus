@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
+    tools:context=".SettingsFragment">
+
+
+    <LinearLayout
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="40dp"
+            android:textColor="@color/textWhiteLight"
+            android:text="Settings" />
+
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/textWhiteLight" />
+
+        <Switch
+            android:id="@+id/mirrorPieces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+
+            android:textColor="@color/textWhiteLight"
+            android:text="Mirror pieces" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/textWhite"
+            android:textSize="14dp"
+            android:text="Mirror pieces to the top of the screen when colors are switched." />
+
+        <View
+            android:layout_marginTop="30dp"
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/textWhiteLight" />
+
+        <Switch
+            android:id="@+id/mirrorTimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="30dp"
+            android:textColor="@color/textWhiteLight"
+            android:text="Mirror timer" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="14dp"
+            android:text="Mirror text of the timer when colors are switched."
+            android:textColor="@color/textWhite" />
+
+        <View
+            android:layout_marginTop="30dp"
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/textWhiteLight" />
+
+        <Switch
+            android:id="@+id/showLastMove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="30dp"
+            android:textColor="@color/textWhiteLight"
+            android:text="Show last move" />
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="14dp"
+            android:text="Highlight last move that have been played."
+            android:textColor="@color/textWhite" />
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="30dp"
+            android:background="@color/textWhiteLight" />
+
+
+    </LinearLayout>
+</FrameLayout>

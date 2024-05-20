@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "78213692660",
+    "project_id": "fungus-402e0",
+    "storage_bucket": "fungus-402e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78213692660:android:2e97561bbfb8006edef2a1",
+        "android_client_info": {
+          "package_name": "com.artakbaghdasaryan.fungus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78213692660-55f9n6rmdaltp8gl99hmf5uhab6q6e8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.artakbaghdasaryan.fungus",
+            "certificate_hash": "995cdaf7c43b867aab9c1ecaebdbaad98d97cb9c"
+          }
+        },
+        {
+          "client_id": "78213692660-6ht9tcqdp634ie0194co0p0ja23gf6v3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfj3pKHFZo7tz-ACNsEAuV-jCz98L4d88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78213692660-6ht9tcqdp634ie0194co0p0ja23gf6v3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

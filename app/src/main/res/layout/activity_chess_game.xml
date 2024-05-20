@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
     tools:context=".ChessGame">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:paddingVertical="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:background="@color/btn_dark"
+                android:paddingHorizontal="40dp"
+                android:paddingVertical="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/go_back" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/timer1"
+            android:layout_marginHorizontal="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-
-            android:text="30:00" />
+            android:text="30:00"
+            android:textColor="@color/textWhiteLight"
+            android:textSize="30sp" />
 
         <TableLayout
             android:id="@+id/tableLayout"
-            android:layout_width="400sp"
-            android:scaleX="0.96"
-            android:scaleY="0.96"
-            android:background="@color/black"
-            android:layout_height="400sp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            >
 
             <TableRow
                 android:layout_width="match_parent"
@@ -34,7 +58,7 @@
 
                 <ImageButton
                     android:id="@+id/cell11"
-                    android:layout_width="50dp"
+
                     android:layout_height="50dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -647,10 +671,12 @@
 
         <TextView
             android:id="@+id/timer2"
+            android:layout_marginHorizontal="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:text="30:00" />
+            android:text="30:00"
+            android:textColor="@color/textWhiteLight"
+            android:textSize="30sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -661,40 +687,51 @@
 
             <ImageButton
                 android:id="@+id/promoteQueen"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text=""
-                app:cornerRadius="0dp"
-                android:layout_width="50sp"
-                android:layout_height="50sp" />
+                app:cornerRadius="0dp" />
 
             <ImageButton
                 android:id="@+id/promoteRook"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text=""
-                app:cornerRadius="0dp"
-                android:layout_width="50sp"
-                android:layout_height="50sp" />
+                app:cornerRadius="0dp" />
 
             <ImageButton
                 android:id="@+id/promoteBishop"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text=""
-                app:cornerRadius="0dp"
-                android:layout_width="50sp"
-                android:layout_height="50sp" />
+                app:cornerRadius="0dp" />
 
             <ImageButton
                 android:id="@+id/promoteKnight"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text=""
-                app:cornerRadius="0dp"
-                android:layout_width="50sp"
-                android:layout_height="50sp" />
+                app:cornerRadius="0dp" />
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/newGameButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="30dp"
+            android:background="@color/btn_dark"
+            android:textColor="@color/textWhiteLight"
+            android:text="New Game" />
 
     </LinearLayout>
 

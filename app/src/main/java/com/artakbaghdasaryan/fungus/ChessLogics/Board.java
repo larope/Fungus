@@ -1,6 +1,8 @@
 package com.artakbaghdasaryan.fungus.ChessLogics;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
@@ -122,6 +124,7 @@ public class Board {
     }
 
     public void SetCell(Vector2Int position, Cell newCell){
+        Log.d("SAS", position.x + " " + position.y + " 127B");
         SetCell(position.x, position.y, newCell);
     }
     public Vector2Int GetSize(){
@@ -168,6 +171,7 @@ public class Board {
         for(int y = 0; y < _boardSize.y; y++){
             for(int x = 0; x < _boardSize.x; x++){
                 Cell currentcell = GetCell(x,y);
+
                 if(currentcell.piece != Piece.Empty && currentcell.piece.color == PieceColor.white){
                     _availableMovesWhite.addAll(GetAvailableMoves(currentcell));
                 }
@@ -260,21 +264,24 @@ public class Board {
     }
 
     public void CastleKingSide(PieceColor color){
+        int whiteLine = GetLine().get(PieceColor.white);
+        int blackLine = GetLine().get(PieceColor.black);
+
         HashMap<PieceColor, Vector2Int> kingPositionsBefore = new HashMap<>();
-        kingPositionsBefore.put(PieceColor.white, new Vector2Int(4,0));
-        kingPositionsBefore.put(PieceColor.black, new Vector2Int(4,7));
+        kingPositionsBefore.put(PieceColor.white, new Vector2Int(4,whiteLine));
+        kingPositionsBefore.put(PieceColor.black, new Vector2Int(4,blackLine));
 
         HashMap<PieceColor, Vector2Int> RookPositionsBefore = new HashMap<>();
-        RookPositionsBefore.put(PieceColor.white, new Vector2Int(7,0));
-        RookPositionsBefore.put(PieceColor.black, new Vector2Int(7,7));
+        RookPositionsBefore.put(PieceColor.white, new Vector2Int(7,whiteLine));
+        RookPositionsBefore.put(PieceColor.black, new Vector2Int(7,blackLine));
 
         HashMap<PieceColor, Vector2Int> kingPositionsAfter = new HashMap<>();
-        kingPositionsAfter.put(PieceColor.white, new Vector2Int(6,0));
-        kingPositionsAfter.put(PieceColor.black, new Vector2Int(6,7));
+        kingPositionsAfter.put(PieceColor.white, new Vector2Int(6,whiteLine));
+        kingPositionsAfter.put(PieceColor.black, new Vector2Int(6,blackLine));
 
         HashMap<PieceColor, Vector2Int> RookPositionsAfter = new HashMap<>();
-        RookPositionsAfter.put(PieceColor.white, new Vector2Int(5,0));
-        RookPositionsAfter.put(PieceColor.black, new Vector2Int(5,7));
+        RookPositionsAfter.put(PieceColor.white, new Vector2Int(5,whiteLine));
+        RookPositionsAfter.put(PieceColor.black, new Vector2Int(5,blackLine));
 
         Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
         Move(RookPositionsBefore.get(color), RookPositionsAfter.get(color));
@@ -282,21 +289,24 @@ public class Board {
     }
 
     public void CastleQueenSide(PieceColor color){
+        int whiteLine = GetLine().get(PieceColor.white);
+        int blackLine = GetLine().get(PieceColor.black);
+
         HashMap<PieceColor, Vector2Int> kingPositionsBefore = new HashMap<>();
-        kingPositionsBefore.put(PieceColor.white, new Vector2Int(4,0));
-        kingPositionsBefore.put(PieceColor.black, new Vector2Int(4,7));
+        kingPositionsBefore.put(PieceColor.white, new Vector2Int(4,whiteLine));
+        kingPositionsBefore.put(PieceColor.black, new Vector2Int(4,blackLine));
 
         HashMap<PieceColor, Vector2Int> RookPositionsBefore = new HashMap<>();
-        RookPositionsBefore.put(PieceColor.white, new Vector2Int(0,0));
-        RookPositionsBefore.put(PieceColor.black, new Vector2Int(0,7));
+        RookPositionsBefore.put(PieceColor.white, new Vector2Int(0,whiteLine));
+        RookPositionsBefore.put(PieceColor.black, new Vector2Int(0,blackLine));
 
         HashMap<PieceColor, Vector2Int> kingPositionsAfter = new HashMap<>();
-        kingPositionsAfter.put(PieceColor.white, new Vector2Int(2,0));
-        kingPositionsAfter.put(PieceColor.black, new Vector2Int(2,7));
+        kingPositionsAfter.put(PieceColor.white, new Vector2Int(2,whiteLine));
+        kingPositionsAfter.put(PieceColor.black, new Vector2Int(2,blackLine));
 
         HashMap<PieceColor, Vector2Int> RookPositionsAfter = new HashMap<>();
-        RookPositionsAfter.put(PieceColor.white, new Vector2Int(3,0));
-        RookPositionsAfter.put(PieceColor.black, new Vector2Int(3,7));
+        RookPositionsAfter.put(PieceColor.white, new Vector2Int(3,whiteLine));
+        RookPositionsAfter.put(PieceColor.black, new Vector2Int(3,blackLine));
 
         Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
         Move(RookPositionsBefore.get(color), RookPositionsAfter.get(color));
@@ -310,6 +320,7 @@ public class Board {
                 !_kingRookMoved.get(color) && !_kingMoved.get(color) &&
                         GetCell(5, lineForColor.get(color)).piece.type == PieceType.empty &&
                         GetCell(6, lineForColor.get(color)).piece.type == PieceType.empty &&
+                        !IsCellAttacked(new Vector2Int(4, lineForColor.get(color)), opponentColor) &&
                         !IsCellAttacked(new Vector2Int(5, lineForColor.get(color)), opponentColor) &&
                         !IsCellAttacked(new Vector2Int(6, lineForColor.get(color)), opponentColor)
         ){
@@ -329,19 +340,25 @@ public class Board {
                 GetCell(3,lineForColor.get(color)).piece == Piece.Empty &&
                 !IsCellAttacked(new Vector2Int(1, lineForColor.get(color)), opponentColor) &&
                 !IsCellAttacked(new Vector2Int(2, lineForColor.get(color)), opponentColor) &&
-                !IsCellAttacked(new Vector2Int(3, lineForColor.get(color)), opponentColor)
+                !IsCellAttacked(new Vector2Int(3, lineForColor.get(color)), opponentColor) &&
+                !IsCellAttacked(new Vector2Int(4, lineForColor.get(color)), opponentColor)
+
         ){
             return true;
         }
-        Log.d("MALOG", "QUEENSIDE" + !_kingRookMoved.get(color) + " " + !_kingMoved.get(color) + " " +  (GetCell(5, lineForColor.get(color)).piece.type == PieceType.empty) + " " + (GetCell(6, lineForColor.get(color)).piece.type == PieceType.empty));
+
         return false;
     }
 
     public HashMap<PieceColor, Integer> GetLine(){
         HashMap<PieceColor, Integer> lineForColor = new HashMap<>();
-        lineForColor.put(PieceColor.white, 0);
-        lineForColor.put(PieceColor.black, 7);
+        lineForColor.put(PieceColor.white, 7);
+        lineForColor.put(PieceColor.black, 0);
 
         return lineForColor;
+    }
+
+    public int GetModifier(PieceColor color) {
+        return color == PieceColor.white ? -1 : 1;
     }
 }

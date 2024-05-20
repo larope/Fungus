@@ -89,6 +89,8 @@ public class MovingPattern {
                 return queenPattern;
             case king:
                 return kingPattern;
+            case pawn:
+                return pawnPattern;
             default:
                 return whitePawnPattern;
         }
