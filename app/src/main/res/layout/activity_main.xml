@@ -39,6 +39,7 @@
         app:itemBackground="@color/backgroundBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:background="@color/btn_green"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu">
 

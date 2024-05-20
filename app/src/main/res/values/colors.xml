@@ -26,4 +26,7 @@
 
     <color name="last_move_white">#40584b</color><!--f9c74f-->
     <color name="last_move_black">#324c42</color><!--f9c74f-->
+
+    <color name="popup_dark">#655C3D</color><!--f9c74f-->
+
 </resources>

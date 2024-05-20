@@ -8,6 +8,7 @@ import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_SHOW_LAST_M
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,18 +23,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.artakbaghdasaryan.fungus.ChessLogics.BishopPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.KingPattern;
+import com.artakbaghdasaryan.fungus.ChessLogics.KnightPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Move;
 import com.artakbaghdasaryan.fungus.ChessLogics.MovingPattern;
+import com.artakbaghdasaryan.fungus.ChessLogics.PawnPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
+import com.artakbaghdasaryan.fungus.ChessLogics.QueenPattern;
+import com.artakbaghdasaryan.fungus.ChessLogics.RookPattern;
 import com.artakbaghdasaryan.fungus.Util.Timer;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 import com.google.gson.Gson;
 
+import org.checkerframework.checker.units.qual.K;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -42,6 +52,8 @@ public class FungusMode extends AppCompatActivity {
     private static final int _boardSize = 8;
     private static final long TIMER_INTERVAL = 100; // Timer interval in milliseconds (adjust as needed)
     private static final long TIMER_DURATION = 60000; // Timer duration in milliseconds (adjust as needed)
+    public static final String FUNGUS_SHARED_PREFERENCES_NAME = "ChessGameFungusMode";
+    public static final String CHESS_GAME_STATE_FUNGUS_MODE = "ChessGameStateFungusMode";
 
 
     private Board _board;
@@ -52,6 +64,7 @@ public class FungusMode extends AppCompatActivity {
     private boolean _isFirstMove = true;
     private boolean _isPromotionMove = false;
     private Vector2Int _promotionPosition;
+    private boolean _gameEnded = false;
 
     private long _increment = 5000;
 
@@ -65,6 +78,36 @@ public class FungusMode extends AppCompatActivity {
     private Runnable _runnable;
     private HashMap<PieceType, ImageButton> _promotionButtons;
 
+    private Dialog _gameResultWindow;
+    private void ShowPopup(String winner){
+        _gameEnded = true;
+        SaveChessGame(null);
+
+        _gameResultWindow.setContentView(R.layout.game_result_popup);
+        ((TextView)_gameResultWindow.findViewById(R.id.winner_text)).setText((winner + " won!").toUpperCase());
+        _gameResultWindow.findViewById(R.id.back_to_menu_popup).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SaveChessGame(null);
+                        _gameEnded = true;
+                        GoBack();
+                    }
+                }
+        );
+        _gameResultWindow.findViewById(R.id.new_game_popup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SaveChessGame(null);
+                _gameEnded = true;
+                StartNewGame();
+            }
+        });
+
+        _gameResultWindow.setCancelable(false);
+        _gameResultWindow.setCanceledOnTouchOutside(false);
+        _gameResultWindow.show();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +115,14 @@ public class FungusMode extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
+        _gameResultWindow = new Dialog(this);
+
 
         findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SaveChessGame(GetCurrentState());
+
                 GoBack();
             }
         });
@@ -112,8 +159,6 @@ public class FungusMode extends AppCompatActivity {
         _currentPlayerColor = PieceColor.white;
         _isPromotionMove = false;
         _timers = new HashMap<>();
-        _timers.put(PieceColor.white, 180000L);
-        _timers.put(PieceColor.black, 180000L);
 
         ChessGameData chessGame = LoadChessGame();
 
@@ -123,6 +168,8 @@ public class FungusMode extends AppCompatActivity {
             _timers.put(PieceColor.black, timeForGame);
             _increment = extras.getInt("increment")*1000;
             SetUpBoard(cells);
+            SetUpTimer();
+
         }
         else if(chessGame != null){
             _board = new Board(new Vector2Int(_boardSize, _boardSize), cells);
@@ -137,16 +184,15 @@ public class FungusMode extends AppCompatActivity {
             _currentPlayerColor = chessGame.currentPlayerColor;
             _isPromotionMove = chessGame.isPromotionMove;
             _promotionPosition = chessGame.promotionPosition;
+            SetUpTimer();
+            UpdatePatternsFungus();
         }
         else{
-            SetUpBoard(cells);
+            StartNewGame();
+            SetUpTimer();
+
         }
 
-
-
-
-
-        SetUpTimer();
 
         _promotionButtons = new HashMap<>();
         _promotionButtons.put(PieceType.queen, (ImageButton) findViewById(R.id.promoteQueen));
@@ -214,7 +260,7 @@ public class FungusMode extends AppCompatActivity {
             }
         }
 
-        UpdatePatternsFungus();
+        UpdatePatternsClassic();
         _board.RefreshAvailableMoves();
 
         UpdateImagesRotations();
@@ -235,10 +281,12 @@ public class FungusMode extends AppCompatActivity {
     }
 
     private void GoBack() {
+        if(_gameEnded){
+            SaveChessGame(null);
+        }
+
         Intent intent = new Intent();
         intent.setClass(FungusMode.this, MainActivity.class);
-
-        SaveChessGame(GetCurrentState());
         startActivity(intent);
     }
 
@@ -268,7 +316,8 @@ public class FungusMode extends AppCompatActivity {
 
                     _handler.postDelayed(this, TIMER_INTERVAL);
                 } else {
-                    TimeLose(_currentPlayerColor);
+
+                    TimeLose(PieceColor.white == _currentPlayerColor ? PieceColor.black : PieceColor.white);
                 }
             }
         };
@@ -280,9 +329,29 @@ public class FungusMode extends AppCompatActivity {
     }
 
     private void TimeLose(PieceColor currentPlayerColor) {
-        //handler.removeCallbacks(runnable); This will stop the timer
-
+        Lost(currentPlayerColor);
     }
+
+    private void Lost(PieceColor color) {
+        ShowPopup(color.toString());
+    }
+
+    private void UpdatePatternsFungus(){
+        for(int y = 0; y < _board.GetSize().y; y++) {
+            for (int x = 0; x < _board.GetSize().x; x++) {
+                Vector2Int position = new Vector2Int(x, y);
+                Piece piece = _board.GetCell(position).piece;
+                if(piece.type != PieceType.empty
+                        && piece.type != PieceType.king
+                        && piece.type != PieceType.queen
+                        && piece.type != PieceType.pawn
+                ){
+                    piece.pattern = GetPattern(_board.GetCell(position));
+                }
+            }
+        }
+    }
+
 
     private void SetUpBoard(Cell[][] cells) {
         _board = new Board(new Vector2Int(_boardSize, _boardSize), cells);
@@ -294,33 +363,34 @@ public class FungusMode extends AppCompatActivity {
         int whiteModifier = _board.GetModifier(PieceColor.white);
 
         for(int i = 0; i < 8; i++){
-            ChangePiece(new Vector2Int(i,whiteY+whiteModifier), Piece.WPawn);
-            ChangePiece(new Vector2Int(i,blackY+blackModifier), Piece.BPawn);
+            ChangePiece(new Vector2Int(i,whiteY+whiteModifier), new Piece(PieceType.pawn, PieceColor.white, new PawnPattern()));
+            ChangePiece(new Vector2Int(i,blackY+blackModifier), new Piece(PieceType.pawn, PieceColor.black, new PawnPattern()));
         }
 
-        ChangePiece(new Vector2Int(0,whiteY), Piece.WRook);
-        ChangePiece(new Vector2Int(7,whiteY), Piece.WRook);
+        ChangePiece(new Vector2Int(0,whiteY), new Piece(PieceType.rook, PieceColor.white, new RookPattern()));
+        ChangePiece(new Vector2Int(7,whiteY), new Piece(PieceType.rook, PieceColor.white, new RookPattern()));
 
-        ChangePiece(new Vector2Int(1,whiteY), Piece.WKnight);
-        ChangePiece(new Vector2Int(6,whiteY), Piece.WKnight);
+        ChangePiece(new Vector2Int(1,whiteY), new Piece(PieceType.knight, PieceColor.white, new KnightPattern()));
+        ChangePiece(new Vector2Int(6,whiteY), new Piece(PieceType.knight, PieceColor.white, new KnightPattern()));
 
-        ChangePiece(new Vector2Int(2,whiteY), Piece.WBishop);
-        ChangePiece(new Vector2Int(5,whiteY), Piece.WBishop);
+        ChangePiece(new Vector2Int(2,whiteY), new Piece(PieceType.bishop, PieceColor.white, new BishopPattern()));
+        ChangePiece(new Vector2Int(5,whiteY), new Piece(PieceType.bishop, PieceColor.white, new BishopPattern()));
 
-        ChangePiece(new Vector2Int(3,whiteY), Piece.WQueen);
-        ChangePiece(new Vector2Int(4,whiteY), Piece.WKing);
+        ChangePiece(new Vector2Int(3,whiteY), new Piece(PieceType.queen, PieceColor.white, new QueenPattern()));
+        ChangePiece(new Vector2Int(4,whiteY), new Piece(PieceType.king, PieceColor.white, new QueenPattern()));
 
-        ChangePiece(new Vector2Int(0,blackY), Piece.BRook);
-        ChangePiece(new Vector2Int(7,blackY), Piece.BRook);
+        ChangePiece(new Vector2Int(0,blackY), new Piece(PieceType.rook, PieceColor.black, new RookPattern()));
+        ChangePiece(new Vector2Int(7,blackY), new Piece(PieceType.rook, PieceColor.black, new RookPattern()));
 
-        ChangePiece(new Vector2Int(1,blackY), Piece.BKnight);
-        ChangePiece(new Vector2Int(6,blackY), Piece.BKnight);
+        ChangePiece(new Vector2Int(1,blackY), new Piece(PieceType.knight, PieceColor.black, new KnightPattern()));
+        ChangePiece(new Vector2Int(6,blackY), new Piece(PieceType.knight, PieceColor.black, new KnightPattern()));
 
-        ChangePiece(new Vector2Int(2,blackY), Piece.BBishop);
-        ChangePiece(new Vector2Int(5,blackY), Piece.BBishop);
+        ChangePiece(new Vector2Int(2,blackY), new Piece(PieceType.bishop, PieceColor.black, new BishopPattern()));
+        ChangePiece(new Vector2Int(5,blackY), new Piece(PieceType.bishop, PieceColor.black, new BishopPattern()));
 
-        ChangePiece(new Vector2Int(3,blackY), Piece.BQueen);
-        ChangePiece(new Vector2Int(4,blackY), Piece.BKing);
+        ChangePiece(new Vector2Int(3,blackY), new Piece(PieceType.queen, PieceColor.black, new QueenPattern()));
+        ChangePiece(new Vector2Int(4,blackY), new Piece(PieceType.king, PieceColor.black, new KingPattern()));
+
     }
 
     private void GetButtons() {
@@ -434,6 +504,10 @@ public class FungusMode extends AppCompatActivity {
 
                 if(position.equals(_availableCells.get(i).position) && selectedCell.piece.color != _currentCell.piece.color){
                     Move(_selectedCellPosition, position);
+                    HaveLost(PieceColor.white);
+                    HaveLost(PieceColor.black);
+                    UpdatePatternsFungus();
+
                     return;
                 }
             }
@@ -446,8 +520,6 @@ public class FungusMode extends AppCompatActivity {
             return;
         }
 
-        UpdatePattern(position);
-        _board.RefreshAvailableMoves();
         _availableCells = _board.GetAvailableMoves(selectedCell);
         _availableCells = selectedCell.piece.pattern.GetAvailableSafeMoves(_board, position);
 
@@ -469,7 +541,7 @@ public class FungusMode extends AppCompatActivity {
         }
 
         _currentCell = _board.GetCell(position.x, position.y);
-        UpdatePatternsFungus();
+
     }
 
     private void Move(Vector2Int selectedCellPosition, Vector2Int position) {
@@ -624,18 +696,6 @@ public class FungusMode extends AppCompatActivity {
         }
     }
 
-    private void UpdatePatternsFungus(){
-        for(int y = 0; y < _board.GetSize().y; y++) {
-            for (int x = 0; x < _board.GetSize().x; x++) {
-                Vector2Int position = new Vector2Int(x, y);
-                Piece piece = _board.GetCell(position).piece;
-                if(piece.type != PieceType.empty){
-                    piece.pattern = GetPattern(_board.GetCell(position));
-                }
-            }
-        }
-    }
-
     private void UpdateImagesRotations() {
         if(_enabledPiecesMirroring) {
             for (int y = 0; y < _boardSize; y++) {
@@ -704,7 +764,7 @@ public class FungusMode extends AppCompatActivity {
             case 2: case 5:
                 return MovingPattern.bishopPattern;
             case 3: case 4:
-                return cell.piece.pattern;
+                return MovingPattern.GetPattern(cell.piece.type);
         }
 
         return  MovingPattern.whitePawnPattern;
@@ -722,22 +782,20 @@ public class FungusMode extends AppCompatActivity {
     }
 
     private void SaveChessGame(ChessGameData chessGame) {
-        SharedPreferences sharedPreferences = getSharedPreferences("ChessGameFungusMode", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(FUNGUS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         Gson gson = new Gson();
         String chessGameJson = gson.toJson(chessGame);
 
-        editor.putString("ChessGameStateFungusMode", chessGameJson);
+        editor.putString(CHESS_GAME_STATE_FUNGUS_MODE, chessGameJson);
         editor.apply();
     }
 
 
     private ChessGameData LoadChessGame() {
-        SharedPreferences sharedPreferences = getSharedPreferences("ChessGameFungusMode", Context.MODE_PRIVATE);
-        String chessGameJson = sharedPreferences.getString("ChessGameStateFungusMode", null);
-
-
+        SharedPreferences sharedPreferences = getSharedPreferences(FUNGUS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String chessGameJson = sharedPreferences.getString(CHESS_GAME_STATE_FUNGUS_MODE, null);
 
         SharedPreferences sharedPref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
 
@@ -759,9 +817,35 @@ public class FungusMode extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private boolean HaveLost(PieceColor color){
+        ArrayList<Cell> availableSafeMoves = new ArrayList<>();
+
+        for(int y = 0; y < _boardSize; y++){
+            for (int x = 0; x < _boardSize; x++) {
+                Cell cell = _board.GetCell(x,y);
+
+                if(cell.piece.type != PieceType.empty && cell.piece.color == color){
+                    availableSafeMoves.addAll(cell.piece.pattern.GetAvailableSafeMoves(_board, new Vector2Int(x,y)));
+                }
+            }
+        }
+
+        if(availableSafeMoves.isEmpty()){
+            Lost(color == PieceColor.white ? PieceColor.black : PieceColor.white);
+            _gameEnded = true;
+            return true;
+        }
+
+        return false;
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SaveChessGame(GetCurrentState());
+        if(!_gameEnded){
+            //SaveChessGame(GetCurrentState());
+        }else{
+            SaveChessGame(null);
+        }
+
     }
 }

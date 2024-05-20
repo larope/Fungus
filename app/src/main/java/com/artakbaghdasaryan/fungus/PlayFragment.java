@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.google.gson.Gson;
 
 public class PlayFragment extends Fragment {
@@ -69,11 +70,13 @@ public class PlayFragment extends Fragment {
     }
 
     private void PlayFungusMode() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("ChessGameFungusMode", Context.MODE_PRIVATE);
-        String chessGameJson = sharedPreferences.getString("ChessGameStateFungusMode", null);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(FungusMode.FUNGUS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String chessGameJson = sharedPreferences.getString(FungusMode.CHESS_GAME_STATE_FUNGUS_MODE, null);
 
+        Gson gson = new Gson();
+        ChessGameData data = gson.fromJson(chessGameJson, ChessGameData.class);
 
-        if (chessGameJson != null) {
+        if (data != null && data.timers.containsKey(PieceColor.black) && data.timers.containsKey(PieceColor.white)) {
             Intent intent = new Intent();
             intent.setClass(getActivity(), FungusMode.class);
             getActivity().startActivity(intent);
@@ -88,7 +91,10 @@ public class PlayFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("ChessGame", Context.MODE_PRIVATE);
         String chessGameJson = sharedPreferences.getString("ChessGameState", null);
 
-        if (chessGameJson != null) {
+        Gson gson = new Gson();
+        ChessGameData data = gson.fromJson(chessGameJson, ChessGameData.class);
+
+        if (data != null && data.timers.containsKey(PieceColor.black) && data.timers.containsKey(PieceColor.white)) {
             Intent intent = new Intent();
             intent.setClass(getActivity(), ChessGame.class);
             getActivity().startActivity(intent);

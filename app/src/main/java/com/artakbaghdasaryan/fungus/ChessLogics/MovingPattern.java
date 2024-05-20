@@ -100,16 +100,7 @@ public class MovingPattern {
 
     public static MovingPattern bishopPattern = new BishopPattern();
 
-    public static MovingPattern knightPattern = new MovingPattern(new Vector2Int[]{
-            new Vector2Int(1,2),
-            new Vector2Int(1,-2),
-            new Vector2Int(-1,2),
-            new Vector2Int(-1,-2),
-            new Vector2Int(2,1),
-            new Vector2Int(2,-1),
-            new Vector2Int(-2,1),
-            new Vector2Int(-2,-1),
-    });
+    public static MovingPattern knightPattern = new KnightPattern();
 
     public static MovingPattern queenPattern = new QueenPattern();
 
