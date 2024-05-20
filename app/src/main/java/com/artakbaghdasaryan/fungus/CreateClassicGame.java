@@ -44,6 +44,7 @@ public class CreateClassicGame extends AppCompatActivity {
     private void CreateGame() {
         Intent intent = new Intent();
         intent.setClass(this, ChessGame.class);
+        //
 
         String hoursStr = _hours.getText().toString();
         String minutesStr = _minutes.getText().toString();
