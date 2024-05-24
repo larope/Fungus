@@ -1,9 +1,5 @@
 package com.artakbaghdasaryan.fungus;
 
-import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_PIECES;
-import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_TIMER;
-import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_SHOW_LAST_MOVE;
-
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -20,11 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
 public class PlayFragment extends Fragment {
@@ -32,6 +28,7 @@ public class PlayFragment extends Fragment {
     private PlayViewModel mViewModel;
 
     private AppCompatButton _playOfflineButton;
+    private AppCompatButton _playFungusButton;
     private AppCompatButton _playOnlineButton;
 
     public PlayFragment(){
@@ -52,7 +49,10 @@ public class PlayFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         _playOfflineButton = view.findViewById(R.id.playOfflineButton);
+        _playFungusButton = view.findViewById(R.id.playFungusButton);
         _playOnlineButton = view.findViewById(R.id.playOnlineButton);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 
         _playOfflineButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,10 +61,16 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        _playOnlineButton.setOnClickListener(new View.OnClickListener() {
+        _playFungusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PlayFungusMode();
+            }
+        });
+        _playOnlineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), OnlineGameMenu.class));
             }
         });
     }

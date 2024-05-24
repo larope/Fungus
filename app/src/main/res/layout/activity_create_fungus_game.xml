@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundBlack"
+    android:background="@color/background"
     tools:context=".CreateFungusGame">
 
 
@@ -22,7 +22,7 @@
                 android:fontFamily="@font/roboto_mono"
                 android:text="New Classic Game"
                 android:textSize="40dp"
-                android:textColor="@color/textWhiteLight"
+                android:textColor="@color/textColor"
                 >
 
 
@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="20dp"
-                android:background="@color/textWhiteLight" />
+                android:background="@color/textColor" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -43,7 +43,7 @@
                 android:layout_marginBottom="5dp"
                 android:text="Start Time (HH:MM:SS)"
                 android:fontFamily="@font/roboto_mono"
-                android:textColor="@color/textWhiteLight"
+                android:textColor="@color/textColor"
                 android:textSize="20dp"
                 />
 
@@ -57,8 +57,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:textColor="@color/textWhiteLight"
-                    android:textColorHint="@color/textWhite"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textWhiteLight"
                     android:textAlignment="center"
                     android:fontFamily="@font/roboto_mono"
                     android:hint="00"
@@ -74,7 +74,7 @@
                     android:fontFamily="@font/roboto_mono"
 
 
-                    android:textColor="@color/textWhite"
+                    android:textColor="@color/textWhiteLight"
                     android:textSize="20dp"
                     android:layout_weight="0"
                     android:text=":" />
@@ -87,8 +87,8 @@
                     android:textAlignment="center"
                     android:hint="00"
                     android:maxLength="2"
-                    android:textColor="@color/textWhiteLight"
-                    android:textColorHint="@color/textWhite"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textWhiteLight"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:layout_weight="1"
@@ -98,7 +98,7 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textWhite"
+                    android:textColor="@color/textWhiteLight"
                     android:textSize="20dp"
                     android:layout_weight="0"
                     android:fontFamily="@font/roboto_mono"
@@ -110,8 +110,8 @@
                     android:layout_width="match_parent"
                     android:textSize="20dp"
                     android:fontFamily="@font/roboto_mono"
-                    android:textColor="@color/textWhiteLight"
-                    android:textColorHint="@color/textWhite"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textWhiteLight"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:ems="10"
@@ -126,7 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="20dp"
-                android:background="@color/textWhiteLight" />
+                android:background="@color/textColor" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,7 +143,7 @@
                     android:fontFamily="@font/roboto_mono"
                     android:text="Time Increment(SS):"
                     android:layout_weight="3"
-                    android:textColor="@color/textWhiteLight"
+                    android:textColor="@color/textColor"
                     android:textSize="20dp" />
 
                 <EditText
@@ -156,8 +156,8 @@
                     android:hint="00"
                     android:inputType="time"
                     android:textAlignment="center"
-                    android:textColor="@color/textWhiteLight"
-                    android:textColorHint="@color/textWhite"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textWhiteLight"
                     android:maxLength="2"
                     android:textSize="20dp" />
 
@@ -176,7 +176,7 @@
                     android:fontFamily="@font/roboto_mono"
                     android:textSize="20dp"
                     android:padding="15dp"
-                    android:textColor="@color/textWhiteLight"
+                    android:textColor="@color/textColor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginRight="30dp"

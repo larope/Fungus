@@ -14,6 +14,8 @@ public class Move {
     public final HashMap<PieceColor, Boolean> queenRookMoved;
     boolean isCastling;
 
+
+
     public Move(Cell from, Cell to, HashMap<PieceColor, Boolean> kingMoved, HashMap<PieceColor, Boolean> kingRookMoved, HashMap<PieceColor, Boolean> queenRookMoved, boolean isCastling){
         this.from = new Cell(from.position.x, from.position.y, from.color, from.piece);
         this.to =  new Cell(to.position.x, to.position.y, to.color, to.piece);

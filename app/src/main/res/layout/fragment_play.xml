@@ -6,52 +6,95 @@
     android:layout_height="match_parent"
     tools:context=".PlayFragment">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:background="@color/backgroundBlack"
-        android:padding="30dp"
+        android:background="@color/background"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="100dp"
-            android:layout_height="200dp"
-            android:src="@mipmap/chess_board_1_foreground" />
+            android:background="@color/backgroundDark"
+            android:orientation="vertical"
+            android:layout_height="90dp"
+            android:padding="20dp">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textWhiteLight"
-            android:textSize="35dp"
-            android:textAlignment="center"
-            android:fontFamily="@font/roboto_mono"
-            android:text="Fungus Chess" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Play"
+                android:textColor="@color/btn_text_color"
+                android:textSize="40dp" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/playOfflineButton"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/btn_dark"
-            android:textColor="@color/textWhiteLight"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="40dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Play Standard" />
+            android:background="@color/background"
+            android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/playOnlineButton"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/btn_dark"
-            android:textColor="@color/textWhiteLight"
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@mipmap/chess_board_1_foreground" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Play Fungus" />
+            android:layout_gravity="center_horizontal"
+            android:background="@color/background"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="30dp">
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/roboto_mono"
+                android:text="Fungus Chess"
+                android:textAlignment="center"
+                android:textColor="@color/textColor"
+                android:textSize="35dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/playOfflineButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/btn_dark"
+                android:text="Play Standard"
+                android:textColor="@color/btn_text_color" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/playFungusButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_dark"
+                android:text="Play Fungus"
+                android:textColor="@color/btn_text_color" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/playOnlineButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_dark"
+                android:text="Play Online"
+                android:textColor="@color/btn_text_color" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </FrameLayout>

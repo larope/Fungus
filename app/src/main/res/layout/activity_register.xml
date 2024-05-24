@@ -5,6 +5,128 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".Register">
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:fontFamily="@font/roboto_mono"
+            android:text="Registration"
+            android:textAlignment="center"
+            android:textColor="@color/textColor"
+            android:textSize="50dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="40dp"
+            android:paddingBottom="40dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+
+                <EditText
+                    android:layout_marginTop="40dp"
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:fontFamily="@font/roboto_mono"
+                    android:hint="name"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="13dp"
+                    android:textSize="20dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/btn_text_color_inActive" />
+                <EditText
+                    android:layout_marginTop="15dp"
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:fontFamily="@font/roboto_mono"
+                    android:hint="email"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="13dp"
+                    android:textSize="20dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/btn_text_color_inActive" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:textSize="20dp"
+
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/roboto_mono"
+                    android:hint="password"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="13dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/btn_text_color_inActive" />
+
+                <EditText
+                    android:id="@+id/passwordRepeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:ems="10"
+
+                    android:fontFamily="@font/roboto_mono"
+                    android:hint="repeat password"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="13dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/btn_text_color_inActive"
+                    android:textSize="20dp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/signUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@drawable/btn_dark"
+                        android:text="Sign up"
+                        android:textColor="@color/btn_text_color"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

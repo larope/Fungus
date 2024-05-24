@@ -1,15 +1,24 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Base application theme. -->
     <style name="Base.Theme.Fungus" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/backgroundBlack</item>
 
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+
+        <item name="colorOnSecondaryContainer">@color/btn_text_color</item>
+        <item name="colorOnSurface">@color/btn_text_color</item>
+        <item name="colorPrimary">@color/backgroundDark</item>
+        <item name="android:navigationBarColor">@color/backgroundDark</item>
+        <item name="colorOnSurfaceVariant">@color/btn_text_color_inActive</item>
+        <item name="colorOutline">@color/btn_text_color_inActive</item>
+        <item name="colorPrimaryContainer">@color/btn_text_color_inActive</item>
     </style>
 
     <style name="Theme.Fungus" parent="Base.Theme.Fungus" />
 
-    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView">
-        <item name="android:color">@color/textWhiteLight</item>
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:background">@color/btn_light</item>
+        <item name="android:textColor">@color/btn_light</item>
     </style>
+
 </resources>

@@ -8,11 +8,14 @@ import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_SHOW_LAST_M
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -455,6 +458,7 @@ public class ChessGame extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void SelectCell(Vector2Int position){
         ReturnNormalColors();
 
@@ -504,11 +508,29 @@ public class ChessGame extends AppCompatActivity {
         }
 
         for (Cell cell : _availableCells) {
-            if (cell.color == CellColor.black) {
-                _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_black_highlighted));
-            } else {
-                _cellsToButtons.get(cell.position).setBackgroundColor(getResources().getColor(R.color.cell_white_highlighted));
+            GradientDrawable drawable = new GradientDrawable();
+
+            if(cell.piece != Piece.Empty) {
+                drawable.setShape(GradientDrawable.RECTANGLE);
+                drawable.setCornerRadius(50f);
+                if (cell.color == CellColor.black) {
+                    drawable.setColor(getResources().getColor(R.color.cell_black));
+                }
+                else {
+                    drawable.setColor(getResources().getColor(R.color.cell_white));
+                }
             }
+            else{
+                if (cell.color == CellColor.black) {
+                    drawable.setColor(getResources().getColor(R.color.cell_black_highlighted));
+                }
+                else {
+                    drawable.setColor(getResources().getColor(R.color.cell_white_highlighted));
+                }
+            }
+
+            _cellsToButtons.get(cell.position).setBackground(drawable);
+
         }
 
         _currentCell = _board.GetCell(position.x, position.y);
@@ -714,6 +736,8 @@ public class ChessGame extends AppCompatActivity {
     private void ReturnNormalColors(){
         for(int y = 0; y < _boardSize; y++){
             for(int x = 0; x < _boardSize; x++){
+                _cellsToButtons.get(new Vector2Int(x,y)).setBackground(getResources().getDrawable(R.drawable.cell_btn));
+
                 if(_board.GetCell(x,y).color == CellColor.black){
                     _cellsToButtons.get(new Vector2Int(x, y)).setBackgroundColor(getResources().getColor(R.color.cell_black));
                 }
@@ -814,7 +838,7 @@ public class ChessGame extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(!_gameEnded){
-            //SaveChessGame(GetCurrentState());
+            SaveChessGame(GetCurrentState());
         }else{
             SaveChessGame(null);
         }

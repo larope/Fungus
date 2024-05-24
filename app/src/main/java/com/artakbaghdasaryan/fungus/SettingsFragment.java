@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -29,9 +31,9 @@ public class SettingsFragment extends Fragment {
 
     private SettingsViewModel mViewModel;
 
-    private Switch _mirrorPieces;
-    private Switch _mirrorTimer;
-    private Switch _showLastMove;
+    private SwitchMaterial _mirrorPieces;
+    private SwitchMaterial _mirrorTimer;
+    private SwitchMaterial _showLastMove;
 
     public static SettingsFragment newInstance() {
         return new SettingsFragment();

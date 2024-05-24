@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/background"
-    android:padding="15dp"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/background"
         android:gravity="center"
-        android:background="@drawable/popup_black"
-        android:padding="15dp"
         android:orientation="vertical"
+        android:padding="15dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,11 +21,11 @@
             android:id="@+id/winner_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:fontFamily="@font/roboto_mono"
-            android:text="WHITE WON!"
+            android:text="Are you sure you want to exit?"
             android:textAlignment="center"
             android:textColor="@color/textColor"
-            android:layout_margin="20dp"
             android:textSize="40dp" />
 
         <LinearLayout
@@ -36,34 +33,34 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:gravity="center"
-            android:padding="10dp"
             android:minHeight="100dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:textColor="@color/btn_text_color"
+                android:id="@+id/exit_confirmed"
                 android:layout_width="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:fontFamily="@font/roboto_mono"
-                android:background="@drawable/btn_dark"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:padding="10dp"
-
-                android:id="@+id/back_to_menu_popup"
-                android:text="Back To Menu" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:textColor="@color/btn_text_color"
-                android:layout_width="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                android:fontFamily="@font/roboto_mono"
-                android:background="@drawable/btn_dark"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/btn_dark"
+                android:fontFamily="@font/roboto_mono"
                 android:padding="10dp"
-                android:id="@+id/new_game_popup"
-                android:text="New Game" />
+
+                android:text="Exit"
+                android:textColor="@color/btn_text_color" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_dark"
+                android:fontFamily="@font/roboto_mono"
+                android:padding="10dp"
+                android:text="Cancel"
+                android:textColor="@color/btn_text_color" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
