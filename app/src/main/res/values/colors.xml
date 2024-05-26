@@ -15,6 +15,9 @@
     <color name="textBlackLight">#efd6ac</color>
     <color name="textBlack">#000000</color>
 
+    <color name="textGreen">#8cb369</color>
+    <color name="textRed">#bc4b51</color>
+
 <!--    <color name="cell_black_highlighted">#2e1717</color>&lt;!&ndash;384c5e&ndash;&gt;-->
 <!--    <color name="cell_black">#4c2626</color>&lt;!&ndash;577590&ndash;&gt;-->
 

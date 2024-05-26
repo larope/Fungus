@@ -1,5 +1,7 @@
 package com.artakbaghdasaryan.fungus.ChessLogics;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 
 public class Move {
@@ -14,6 +16,19 @@ public class Move {
     public HashMap<PieceColor, Boolean> kingRookMoved;
     public HashMap<PieceColor, Boolean> queenRookMoved;
 
+    @NonNull
+    public String toString() {
+        return "Move{" +
+                "from=" + from +
+                ", to=" + to +
+                ", fromPiece=" + fromPiece +
+                ", toPiece=" + toPiece +
+                ", isCastling=" + isCastling +
+                ", kingMoved=" + kingMoved +
+                ", kingRookMoved=" + kingRookMoved +
+                ", queenRookMoved=" + queenRookMoved +
+                '}';
+    }
 
     public Move(Cell from, Cell to, HashMap<PieceColor, Boolean> kingMoved, HashMap<PieceColor, Boolean> kingRookMoved, HashMap<PieceColor, Boolean> queenRookMoved, boolean isCastling){
         this.from = new Cell(from.position.x, from.position.y, from.color, from.piece);

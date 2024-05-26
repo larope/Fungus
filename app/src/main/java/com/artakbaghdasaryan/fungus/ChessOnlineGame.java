@@ -2,11 +2,8 @@ package com.artakbaghdasaryan.fungus;
 
 import static android.app.PendingIntent.getActivity;
 
-import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_PIECES;
-import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_TIMER;
 import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_SHOW_LAST_MOVE;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -41,9 +38,6 @@ import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
 import com.artakbaghdasaryan.fungus.Util.Timer;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,7 +46,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class ChessOnlineGame extends AppCompatActivity {
@@ -69,6 +62,7 @@ public class ChessOnlineGame extends AppCompatActivity {
     private boolean _isFirstMove = true;
     private boolean _isPromotionMove = false;
     private Vector2Int _promotionPosition;
+    private int _promotionXBefore;
 
     private long _increment = 5000;
 
@@ -112,7 +106,7 @@ public class ChessOnlineGame extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chess_game);
+        setContentView(R.layout.activity_chess_online_game);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
@@ -263,9 +257,44 @@ public class ChessOnlineGame extends AppCompatActivity {
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                         if(documentSnapshot != null){
                             HashMap<String, Object> moveMap = (HashMap)documentSnapshot.get("LastMove");
+
                             if(moveMap == null){
                                 return;
                             }
+
+                            if(moveMap.get("playerColor") == _thisPlayerColor.name()){
+                                return;
+                            }
+
+                            if((boolean) moveMap.get("promoted")){
+                                Vector2Int promotionPosition = new Vector2Int(
+                                        ((Long) moveMap.get("promotionX")).intValue(),
+                                        _board.GetLine().get(_thisPlayerColor));
+
+                                if(_promotionPosition.equals(promotionPosition)){
+                                    return;
+                                }
+
+                                Cell newCell = new Cell(
+                                        promotionPosition,
+                                        _board.GetCell(promotionPosition).color,
+                                        Piece.GetPiece(PieceType.valueOf((String) moveMap.get("promotionPiece")), _currentPlayerColor)
+                                );
+
+                                _board.SetCell(promotionPosition, newCell);
+                                _board.GetCell(new Vector2Int(
+                                        ((Long) moveMap.get("promotionXBefore")).intValue(),
+                                        promotionPosition.y+_board.GetModifier(_thisPlayerColor)
+                                )).piece = Piece.Empty;
+
+                                _timers.put(_thisPlayerColor == PieceColor.white ? PieceColor.black : PieceColor.white, (long) moveMap.get("timer"));
+                                UpdateTimersUI();
+                                RefreshImages();
+                                DisablePromotionUI();
+                                ChangePlayerColor();
+                            }
+
+
                             Log.d("MALOG", "Refresh");
 
                             Vector2Int from = new Vector2Int(((Long) moveMap.get("fromX")).intValue(), ((Long) moveMap.get("fromY")).intValue());
@@ -297,14 +326,14 @@ public class ChessOnlineGame extends AppCompatActivity {
                                 _lastMove.queenRookMovedBlack = ((boolean)moveMap.get("queenRookMovedBlack"));
                                 _lastMove.queenRookMovedWhite = ((boolean)moveMap.get("queenRookMovedWhite"));
 
-                                /*
+
                                 Move(
                                         new Vector2Int(Integer.parseInt(_lastMove.fromX+""), Integer.parseInt(_lastMove.fromY+"")),
                                         new Vector2Int(Integer.parseInt(_lastMove.toX+""), Integer.parseInt(_lastMove.toY+""))
-                                );*/
-
-                                SelectCell(from, true);
-                                SelectCell(to, true);
+                                );
+//
+//                                SelectCell(from, true);
+//                                SelectCell(to, true);
 
                                 HaveLost(PieceColor.white);
                                 HaveLost(PieceColor.black);
@@ -611,6 +640,7 @@ public class ChessOnlineGame extends AppCompatActivity {
         if(piece.type == PieceType.pawn && position.y == _board.GetLine().get(opponentColor)){
             _board.Move(selectedCellPosition, position);
             _isPromotionMove = true;
+            _promotionXBefore = selectedCellPosition.x;
             _promotionPosition = position;
             EnablePromotionUI();
 
@@ -619,20 +649,14 @@ public class ChessOnlineGame extends AppCompatActivity {
         _board.Move(selectedCellPosition, position);
 
         _lastMove = new MoveOnlineData(_board.GetLastMove());
+        _lastMove.playerColor = _thisPlayerColor.name();
+        _lastMove.timer = _timers.get(_thisPlayerColor);
         _dataBase.collection("games")
                 .document(dataOnline.gameId)
                 .update("LastMove",
-                        new MoveOnlineData(_board.GetLastMove())
+                        _lastMove
                 );
-        _dataBase.collection("games")
-                .document(dataOnline.gameId)
-                .update("LastChangedCell1",
-                        new CellOnlineData(
-                                _board.GetLastMove().from.position.x,
-                                _board.GetLastMove().from.position.y,
-                                _board.GetLastMove().from.piece.type
-                        )
-                );
+
 //        _dataBase.collection("games")
 //                .document(dataOnline.gameId)
 //                .update("LastChangesUserId",
@@ -647,6 +671,21 @@ public class ChessOnlineGame extends AppCompatActivity {
     private void Promote(PieceType type) {
         _board.GetCell(_promotionPosition).piece = Piece.GetPiece(type, _currentPlayerColor);
         _isPromotionMove = false;
+
+        MoveOnlineData data = new MoveOnlineData(_board.GetLastMove());
+
+        data.promoted = true;
+        data.promotionX = _promotionPosition.x;
+        data.promotionPiece = type.name();
+        data.promotionXBefore = _promotionXBefore;
+        data.playerColor = _thisPlayerColor.name();
+        data.timer = _timers.get(_thisPlayerColor);
+
+        _dataBase.collection("games")
+                .document(dataOnline.gameId)
+                .update("LastMove",
+                        data
+                );
 
         RefreshImages();
         DisablePromotionUI();

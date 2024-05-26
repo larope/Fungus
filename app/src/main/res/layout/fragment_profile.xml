@@ -23,8 +23,8 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="Profile"
                 android:layout_weight="1"
+                android:text="Profile"
                 android:textColor="@color/btn_text_color"
                 android:textSize="40dp" />
 
@@ -32,49 +32,171 @@
                 android:id="@+id/exitButton"
                 android:layout_width="200dp"
                 android:layout_height="60dp"
-                android:paddingLeft="40dp"
                 android:layout_weight="1"
-                android:paddingVertical="10dp"
-                android:paddingRight="10dp"
                 android:backgroundTint="@color/btn_text_color"
+                android:paddingVertical="10dp"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
                 android:src="@drawable/exit_icon" />
 
         </LinearLayout>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            >
-
-
-            <ImageView
-                android:id="@+id/profile_image"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="30dp"
-                tools:src="@tools:sample/avatars" />
-
-            <TextView
-                android:id="@+id/profile_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:text="Artak Baghdasaryan"
-                android:textAlignment="center"
-                android:textColor="@color/textColor"
-                android:textSize="30dp" />
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/setting_profile_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="130dp"
+                        android:layout_marginTop="30dp"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <TextView
+                        android:id="@+id/profile_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:text="Artak Baghdasaryan"
+                        android:textAlignment="center"
+                        android:textColor="@color/textColor"
+                        android:textSize="40dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:background="@color/backgroundDark"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="240dp"
+                            android:layout_height="wrap_content"
+                            android:text="Parties played:"
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:id="@+id/parties_played"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_weight="1"
+                            android:text="7"
+                            android:textAlignment="center"
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/backgroundDark"
+                        android:orientation="horizontal"
+
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="240dp"
+                            android:layout_height="wrap_content"
+                            android:text="Parties won: "
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:id="@+id/parties_won"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_weight="1"
+                            android:text="5"
+                            android:textAlignment="center"
+                            android:textColor="@color/textGreen"
+                            android:textSize="30dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/backgroundDark"
+                        android:orientation="horizontal"
+
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="240dp"
+                            android:layout_height="wrap_content"
+                            android:text="Parties lost: 2"
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:id="@+id/parties_lost"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_weight="1"
+                            android:text="2"
+                            android:textAlignment="center"
+                            android:textColor="@color/textRed"
+                            android:textSize="30dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/backgroundDark"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="240dp"
+                            android:layout_height="wrap_content"
+                            android:text="Win/Lose score:"
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:id="@+id/parties_wl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_weight="1"
+                            android:text="2.5"
+                            android:textAlignment="center"
+                            android:textColor="@color/btn_text_color"
+                            android:textSize="30dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
+        </ScrollView>
 
-
-        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

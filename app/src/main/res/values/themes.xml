@@ -11,11 +11,10 @@
         <item name="colorOnSurfaceVariant">@color/btn_text_color_inActive</item>
         <item name="colorOutline">@color/btn_text_color_inActive</item>
         <item name="colorPrimaryContainer">@color/btn_text_color_inActive</item>
-
-
     </style>
 
     <style name="Theme.Fungus" parent="Base.Theme.Fungus" />
+
 
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:background">@color/btn_light</item>

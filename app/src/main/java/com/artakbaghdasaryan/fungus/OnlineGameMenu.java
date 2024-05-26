@@ -1,7 +1,7 @@
 package com.artakbaghdasaryan.fungus;
 
 import static android.content.ContentValues.TAG;
-
+import static android.widget.Toast.*;
 import static com.artakbaghdasaryan.fungus.CreateClassicGame.isValidInteger;
 
 import android.app.Dialog;
@@ -21,12 +21,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.artakbaghdasaryan.fungus.ChessLogics.CellOnlineData;
 import com.artakbaghdasaryan.fungus.ChessLogics.ChessGameDataOnline;
 import com.artakbaghdasaryan.fungus.ChessLogics.MoveOnlineData;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
@@ -46,7 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 public class OnlineGameMenu extends AppCompatActivity {
@@ -59,6 +56,7 @@ public class OnlineGameMenu extends AppCompatActivity {
     private EditText _seconds;
     private EditText _increment;
     private String _mode;
+
 
     private String[] _modes = {"Classic", "Fungus"};
 
@@ -172,7 +170,7 @@ public class OnlineGameMenu extends AppCompatActivity {
     }
 
     private void DisplayToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+        makeText(this, text, LENGTH_SHORT).show();
     }
     private boolean CreateGame(){
         String hoursStr = _hours.getText().toString();
@@ -192,8 +190,8 @@ public class OnlineGameMenu extends AppCompatActivity {
         _newChessGame = new ChessGameDataOnline(
                 "none",
                 Timer.ConvertToMilliseconds(
-                Integer.parseInt(hoursStr), Integer.parseInt(minutesStr),
-                Integer.parseInt(secondsStr)),
+                        Integer.parseInt(hoursStr), Integer.parseInt(minutesStr),
+                        Integer.parseInt(secondsStr)),
                 Integer.parseInt(incrementStr) * 1000L,
                 _mode,
                 FirebaseAuth.getInstance().getCurrentUser().getUid(),
@@ -223,11 +221,8 @@ public class OnlineGameMenu extends AppCompatActivity {
         chessGame.put("IsHostWhite", data.isHostWhite);
         chessGame.put("CurrentPlayerColor", PieceColor.white);
         chessGame.put("LastChangesUserId", null);
-        chessGame.put("LastChangedCellFrom", CellOnlineData.Empty);
-        chessGame.put("LastChangedCellTo", CellOnlineData.Empty);
+        chessGame.put("HaveBeenJoined", false);
 
-        chessGame.put("LastChangedCellFrom2", CellOnlineData.Empty);
-        chessGame.put("LastChangedCellTo2", CellOnlineData.Empty);
 
         Log.d("MALOG", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
 
@@ -264,7 +259,10 @@ public class OnlineGameMenu extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> chessGame = document.getData();
-
+                                boolean haveBeenJoined = (boolean) chessGame.get("HaveBeenJoined");
+                                if(haveBeenJoined) {
+                                    continue;
+                                }
                                 String name = (String) chessGame.get("HostUsername");
                                 String mode = (String) chessGame.get("Mode");
                                 Long duration = (Long) chessGame.get("Duration");
@@ -315,10 +313,18 @@ public class OnlineGameMenu extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         String playerColor;
+                        Log.d("MALOG2", FirebaseAuth.getInstance().getCurrentUser().getUid().equals(_selectedGame.hostId) + "");
+
 
                         if(_selectedGame.hostId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
                             playerColor = Boolean.parseBoolean(document.getString("isHostWhite")) ? "white" : "black";
                         }else{
+                            _dataBase.collection("games")
+                                    .document(_selectedGame.gameId)
+                                    .update("HaveBeenJoined",
+                                            true
+                                    );
                             playerColor = !Boolean.parseBoolean(document.getString("isHostWhite")) ? "white" : "black";
                         }
 
@@ -326,8 +332,8 @@ public class OnlineGameMenu extends AppCompatActivity {
                             _dataBase.collection("games")
                                     .document(_selectedGame.gameId)
                                     .update("PlayerWhiteName",
-                                    FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
-                                            );
+                                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                                    );
                             _dataBase.collection("games")
                                     .document(_selectedGame.gameId)
                                     .update("PlayerWhiteId",
@@ -376,7 +382,7 @@ public class OnlineGameMenu extends AppCompatActivity {
                 item.getMode(),
                 item.getHostId(),
                 item.getHostName()
-                );
+        );
     }
 }
 

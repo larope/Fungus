@@ -285,8 +285,8 @@ public class Board {
         RookPositionsAfter.put(PieceColor.white, new Vector2Int(5,whiteLine));
         RookPositionsAfter.put(PieceColor.black, new Vector2Int(5,blackLine));
 
-        Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
         Move(RookPositionsBefore.get(color), RookPositionsAfter.get(color));
+        Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
 
     }
 
@@ -310,8 +310,8 @@ public class Board {
         RookPositionsAfter.put(PieceColor.white, new Vector2Int(3,whiteLine));
         RookPositionsAfter.put(PieceColor.black, new Vector2Int(3,blackLine));
 
-        Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
         Move(RookPositionsBefore.get(color), RookPositionsAfter.get(color));
+        Move(kingPositionsBefore.get(color), kingPositionsAfter.get(color));
     }
 
     public boolean IsCastlingAvailableKingSide(PieceColor color){

@@ -6,6 +6,6 @@
     android:padding="16dp"
     android:ellipsize="end"
     android:maxLines="1"
-    android:textColor="@color/textBlack"
+    android:textColor="@color/textColor"
     android:text="Select mode"
     />
