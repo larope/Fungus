@@ -1,4 +1,4 @@
-package com.artakbaghdasaryan.fungus;
+package com.artakbaghdasaryan.fungus.ChessLogics;
 
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;

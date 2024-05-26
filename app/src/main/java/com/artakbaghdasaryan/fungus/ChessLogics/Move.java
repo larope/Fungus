@@ -8,12 +8,11 @@ public class Move {
 
     public Piece fromPiece;
     public Piece toPiece;
-
-    public final HashMap<PieceColor, Boolean> kingMoved;
-    public final HashMap<PieceColor, Boolean> kingRookMoved;
-    public final HashMap<PieceColor, Boolean> queenRookMoved;
     boolean isCastling;
 
+    public HashMap<PieceColor, Boolean> kingMoved;
+    public HashMap<PieceColor, Boolean> kingRookMoved;
+    public HashMap<PieceColor, Boolean> queenRookMoved;
 
 
     public Move(Cell from, Cell to, HashMap<PieceColor, Boolean> kingMoved, HashMap<PieceColor, Boolean> kingRookMoved, HashMap<PieceColor, Boolean> queenRookMoved, boolean isCastling){
@@ -32,6 +31,31 @@ public class Move {
         this.toPiece = to.piece;
 
         this.isCastling = isCastling;
+    }
+
+    public Move(MoveOnlineData data,  Board board){
+        Cell fromCell = board.GetCell((int) data.fromX, (int) data.fromY);
+        Cell toCell = board.GetCell((int) data.toX, (int) data.toY);
+
+        this.from = new Cell((int) data.fromX, (int) data.fromY, fromCell.color, fromCell.piece);
+        this.to =  new Cell((int) data.toX, (int) data.toY, toCell.color, toCell.piece);
+
+        this.fromPiece = this.from.piece;
+        this.toPiece = this.to.piece;
+        this.isCastling = data.isCastling;
+
+        this.kingMoved = new HashMap<>();
+        this.kingRookMoved = new HashMap<>();
+        this.queenRookMoved = new HashMap<>();
+
+        kingMoved.put(PieceColor.white, data.kingMovedWhite);
+        kingMoved.put(PieceColor.black, data.kingMovedBlack);
+
+        kingRookMoved.put(PieceColor.white, data.kingRookMovedWhite);
+        kingRookMoved.put(PieceColor.black, data.kingRookMovedBlack);
+
+        queenRookMoved.put(PieceColor.white, data.queenRookMovedWhite);
+        queenRookMoved.put(PieceColor.black, data.queenRookMovedBlack);
     }
 
     public static Move Empty = new Move(Cell.Empty, Cell.Empty, new HashMap<>(), new HashMap<>(), new HashMap<>(), false);

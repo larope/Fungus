@@ -8,176 +8,68 @@
     tools:context=".OnlineGameMenu">
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundDark"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        >
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/backgroundDark"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:text="Online"
+            android:textColor="@color/btn_text_color"
+            android:textSize="40dp" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Online"
-                android:textColor="@color/btn_text_color"
-                android:textSize="40dp" />
-
-        </LinearLayout>
-
-        <ListView
-            android:id="@+id/rooms_list"
-            android:layout_width="match_parent"
-            android:layout_height="185dp">
-
-        </ListView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/background"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-
-<!--            <ListView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                >-->
-
-<!--            </ListView>-->
-
-            <TextView
-                android:id="@+id/textOfficial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textColor="@color/textColor"
-                android:textSize="50dp"
-                android:fontFamily="@font/roboto_mono"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/inputShit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="text"
-                android:layout_marginTop="50dp"
-                android:layout_marginHorizontal="40dp"
-                android:textColor="@color/textColor"
-                android:textColorHint="@color/btn_text_color_inActive"
-                android:hint="Some text there"
-                />
-        </LinearLayout>
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="20dp"-->
-<!--                android:background="@color/backgroundDark"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent">-->
-
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:orientation="vertical"-->
-<!--                        android:paddingHorizontal="10dp"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                        app:layout_constraintEnd_toStartOf="@+id/board_logo"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent">-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/player_name"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginTop="10dp"-->
-
-<!--                            android:text="Artak Baghdasaryan"-->
-<!--                            android:textAlignment="center"-->
-<!--                            android:textColor="@color/btn_text_color"-->
-
-<!--                            android:textSize="20dp" />-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/chess_mode"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginTop="10dp"-->
-<!--                            android:text="Mode: Fungus"-->
-<!--                            android:textColor="@color/textWhite" />-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/time_control"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginTop="5dp"-->
-<!--                            android:text="Time Control: 10(+5)"-->
-<!--                            android:textColor="@color/textWhite" />-->
-
-
-<!--                    </LinearLayout>-->
-
-<!--                    <ImageButton-->
-<!--                        android:id="@+id/board_logo"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:background="@drawable/btn_dark"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent"-->
-<!--                        app:srcCompat="@drawable/chess_board_1_background" />-->
-<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--            </LinearLayout>-->
-<!--        </LinearLayout>-->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingHorizontal="40dp"
-            android:paddingVertical="20dp"
-            android:background="@color/backgroundDark"
-            android:orientation="vertical">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/join"
-                android:background="@drawable/btn_light"
-                android:textColor="@color/btn_text_color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Join"
-                android:layout_marginBottom="10dp"
-                />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/create"
-                android:background="@drawable/btn_light"
-                android:textColor="@color/btn_text_color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Create"
-                />
-        </LinearLayout>
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/rooms_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/background"
+        android:layout_marginVertical="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundDark"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="40dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/join"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/btn_light"
+            android:text="Join"
+            android:textColor="@color/btn_text_color" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_light"
+            android:text="Create"
+            android:textColor="@color/btn_text_color" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

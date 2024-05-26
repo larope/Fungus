@@ -78,7 +78,7 @@ public class CreateClassicGame extends AppCompatActivity {
     }
 
 
-    private boolean isValidInteger(String str) {
+    public static boolean isValidInteger(String str) {
         if (str == null || str.isEmpty()) {
             return false;
         }

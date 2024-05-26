@@ -2,6 +2,7 @@ package com.artakbaghdasaryan.fungus;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,6 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -30,12 +33,12 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         _binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(_binding.getRoot());
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 
         _binding.signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 if(_binding.name.getText().toString().isEmpty() || _binding.email.getText().toString().isEmpty() || _binding.password.getText().toString().isEmpty() || _binding.passwordRepeat.getText().toString().isEmpty()){
+                if(_binding.name.getText().toString().isEmpty() || _binding.email.getText().toString().isEmpty() || _binding.password.getText().toString().isEmpty() || _binding.passwordRepeat.getText().toString().isEmpty()){
                      Toast.makeText(Register.this, "Fields can not be empty.", Toast.LENGTH_SHORT).show();
                  }
                  else if(!_binding.passwordRepeat.getText().toString().isEmpty() && !_binding.password.getText().toString().equals(_binding.passwordRepeat.getText().toString())){
@@ -52,9 +55,27 @@ public class Register extends AppCompatActivity {
                                          userInfo.put("email", _binding.email.getText().toString());
                                          userInfo.put("username", _binding.name.getText().toString());
 
-                                         FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(userInfo);
 
-                                         startActivity(new Intent(Register.this, MainActivity.class));
+                                         FirebaseAuth.getInstance().signInWithEmailAndPassword(_binding.email.getText().toString(), _binding.password.getText().toString())
+                                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                                     @Override
+                                                     public void onComplete(@NonNull Task<AuthResult> task) {
+                                                         if(task.isSuccessful()){
+
+                                                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                                             if (user != null) {
+                                                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                                         .setDisplayName(userInfo.get("username"))
+                                                                         .build();
+
+                                                                 user.updateProfile(profileUpdates);
+                                                             }
+
+                                                             startActivity(new Intent(Register.this, MainActivity.class));
+                                                         }
+
+                                                     }
+                                                 });
                                      }
                                  }
                              });

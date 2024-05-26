@@ -267,6 +267,8 @@ public class Board {
         int whiteLine = GetLine().get(PieceColor.white);
         int blackLine = GetLine().get(PieceColor.black);
 
+        Log.d("MALOG", "CastleKingSide");
+
         HashMap<PieceColor, Vector2Int> kingPositionsBefore = new HashMap<>();
         kingPositionsBefore.put(PieceColor.white, new Vector2Int(4,whiteLine));
         kingPositionsBefore.put(PieceColor.black, new Vector2Int(4,blackLine));

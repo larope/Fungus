@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.artakbaghdasaryan.fungus.ChessLogics.ChessGameData;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
@@ -51,8 +52,6 @@ public class PlayFragment extends Fragment {
         _playOfflineButton = view.findViewById(R.id.playOfflineButton);
         _playFungusButton = view.findViewById(R.id.playFungusButton);
         _playOnlineButton = view.findViewById(R.id.playOnlineButton);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
 
         _playOfflineButton.setOnClickListener(new View.OnClickListener() {
             @Override

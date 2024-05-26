@@ -21,4 +21,8 @@
         <item name="android:textColor">@color/btn_light</item>
     </style>
 
+    <style name="App.Custom.Layout" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="colorOnSurface">@color/textColor</item>
+    </style>
+
 </resources>

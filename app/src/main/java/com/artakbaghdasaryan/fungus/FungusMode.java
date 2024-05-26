@@ -27,6 +27,7 @@ import com.artakbaghdasaryan.fungus.ChessLogics.BishopPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.ChessGameData;
 import com.artakbaghdasaryan.fungus.ChessLogics.KingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.KnightPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Move;
@@ -41,9 +42,6 @@ import com.artakbaghdasaryan.fungus.Util.Timer;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
 import com.google.gson.Gson;
 
-import org.checkerframework.checker.units.qual.K;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;

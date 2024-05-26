@@ -6,6 +6,8 @@ import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_PIEC
 import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_MIRROR_TIMER;
 import static com.artakbaghdasaryan.fungus.SettingsFragment.SETTINGS_SHOW_LAST_MOVE;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -28,21 +30,32 @@ import android.widget.TextView;
 import com.artakbaghdasaryan.fungus.ChessLogics.Board;
 import com.artakbaghdasaryan.fungus.ChessLogics.Cell;
 import com.artakbaghdasaryan.fungus.ChessLogics.CellColor;
+import com.artakbaghdasaryan.fungus.ChessLogics.CellOnlineData;
 import com.artakbaghdasaryan.fungus.ChessLogics.ChessGameData;
+import com.artakbaghdasaryan.fungus.ChessLogics.ChessGameDataOnline;
 import com.artakbaghdasaryan.fungus.ChessLogics.Move;
+import com.artakbaghdasaryan.fungus.ChessLogics.MoveOnlineData;
 import com.artakbaghdasaryan.fungus.ChessLogics.MovingPattern;
 import com.artakbaghdasaryan.fungus.ChessLogics.Piece;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceColor;
 import com.artakbaghdasaryan.fungus.ChessLogics.PieceType;
 import com.artakbaghdasaryan.fungus.Util.Timer;
 import com.artakbaghdasaryan.fungus.Util.Vector2Int;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class ChessGame extends AppCompatActivity {
+public class ChessOnlineGame extends AppCompatActivity {
     private static final int _boardSize = 8;
     private static final long TIMER_INTERVAL = 100; // Timer interval in milliseconds (adjust as needed)
     private static final long TIMER_DURATION = 60000; // Timer duration in milliseconds (adjust as needed)
@@ -56,12 +69,9 @@ public class ChessGame extends AppCompatActivity {
     private boolean _isFirstMove = true;
     private boolean _isPromotionMove = false;
     private Vector2Int _promotionPosition;
-    private boolean _gameEnded = false;
 
     private long _increment = 5000;
 
-    private boolean _enabledPiecesMirroring = false;
-    private boolean _enabledTimerMirroring = false;
     private boolean _showLastMove = false;
 
     private HashMap<Vector2Int, ImageButton> _cellsToButtons;
@@ -71,9 +81,18 @@ public class ChessGame extends AppCompatActivity {
     private HashMap<PieceType, ImageButton> _promotionButtons;
 
     private Dialog _gameResultWindow;
+
+    private ChessGameDataOnline dataOnline;
+
+    private FirebaseFirestore _dataBase;
+
+    private MoveOnlineData _lastMove;
+
+    private PieceColor _thisPlayerColor;
+
+    private CellOnlineData _lastChangedCell = CellOnlineData.Empty;
+
     private void ShowPopup(String winner){
-        _gameEnded = true;
-        SaveChessGame(null);
 
         _gameResultWindow.setContentView(R.layout.game_result_popup);
         ((TextView)_gameResultWindow.findViewById(R.id.winner_text)).setText((winner + " won!").toUpperCase());
@@ -81,20 +100,10 @@ public class ChessGame extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SaveChessGame(null);
-                        _gameEnded = true;
                         GoBack();
                     }
                 }
         );
-        _gameResultWindow.findViewById(R.id.new_game_popup).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SaveChessGame(null);
-                _gameEnded = true;
-                StartNewGame();
-            }
-        });
 
         _gameResultWindow.setCancelable(false);
         _gameResultWindow.setCanceledOnTouchOutside(false);
@@ -107,22 +116,17 @@ public class ChessGame extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
+        _dataBase = FirebaseFirestore.getInstance();
+
+        _lastMove = MoveOnlineData.Empty;
+
         _gameResultWindow = new Dialog(this);
 
 
         findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SaveChessGame(GetCurrentState());
-
                 GoBack();
-            }
-        });
-
-        findViewById(R.id.newGameButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StartNewGame();
             }
         });
 
@@ -154,35 +158,31 @@ public class ChessGame extends AppCompatActivity {
 
         ChessGameData chessGame = LoadChessGame();
 
-        if(extras != null && extras.getBoolean("isNewGame") == true){
-            long timeForGame = Timer.ConvertToMilliseconds(extras.getInt("hours"), extras.getInt("minutes"), extras.getInt("seconds"));
-            _timers.put(PieceColor.white, timeForGame);
-            _timers.put(PieceColor.black, timeForGame);
-            _increment = extras.getInt("increment")*1000;
+        if(extras != null){
+            long duration = extras.getLong("duration");
+
+            _increment = extras.getLong("increment");
+
+            _timers.put(PieceColor.white, duration);
+            _timers.put(PieceColor.black, duration);
+
+            dataOnline = new ChessGameDataOnline(
+                    extras.getString("gameId"),
+                    duration,
+                    _increment,
+                    extras.getString("mode"),
+                    extras.getString("hostId"),
+                    extras.getString("hostUsername")
+            );
+
+            _thisPlayerColor = Objects.equals(extras.getString("currentPlayerColor"), "white") ? PieceColor.white : PieceColor.black;
+
+            Log.d("IMPORTANT", _thisPlayerColor.name());
+
             SetUpBoard(cells);
             SetUpTimer();
-
-        }
-        else if(chessGame != null){
-            _board = new Board(new Vector2Int(_boardSize, _boardSize), cells);
-
-            for(int y = 0; y < _boardSize; y++){
-                for(int x = 0; x < _boardSize; x++){
-                    _board.GetCell(x,y).piece = Piece.GetPiece(
-                            chessGame.board.GetCell(x,y).piece.type, chessGame.board.GetCell(x,y).piece.color);
-                }
-            }
-            _timers = chessGame.timers;
-            _currentPlayerColor = chessGame.currentPlayerColor;
-            _isPromotionMove = chessGame.isPromotionMove;
-            _promotionPosition = chessGame.promotionPosition;
-            SetUpTimer();
-
-        }
-        else{
-            StartNewGame();
-            SetUpTimer();
-
+        }else{
+            Log.e("MERR", "NODATA");
         }
 
 
@@ -246,7 +246,7 @@ public class ChessGame extends AppCompatActivity {
                 _cellsToButtons.get(new Vector2Int(x, y)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SelectCell(new Vector2Int(finalX, finalY));
+                        SelectCell(new Vector2Int(finalX, finalY),false);
                     }
                 });
             }
@@ -257,6 +257,62 @@ public class ChessGame extends AppCompatActivity {
 
         UpdateImagesRotations();
         RefreshImages();
+        _dataBase.collection("games")
+                .document(dataOnline.gameId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if(documentSnapshot != null){
+                            HashMap<String, Object> moveMap = (HashMap)documentSnapshot.get("LastMove");
+                            if(moveMap == null){
+                                return;
+                            }
+                            Log.d("MALOG", "Refresh");
+
+                            Vector2Int from = new Vector2Int(((Long) moveMap.get("fromX")).intValue(), ((Long) moveMap.get("fromY")).intValue());
+                            Vector2Int to = new Vector2Int(((Long) moveMap.get("toX")).intValue(), ((Long) moveMap.get("toY")).intValue());
+
+                            Vector2Int lastFrom = new Vector2Int(Integer.parseInt(_lastMove.fromX+""), Integer.parseInt(""+_lastMove.fromY));
+                            Vector2Int lastTo = new Vector2Int(Integer.parseInt(_lastMove.toX+""), Integer.parseInt(""+_lastMove.toY));
+
+                            Log.d("MALOG", "from: " + from.x + ":" + from.y + "   to: " + to.x + ":" + to.y );
+
+                            if(from.equals(lastFrom)){
+                                return;
+                            }
+
+                            if(moveMap != null && (long)moveMap.get("fromX") != -69){
+                                Log.d("MALOG", "moveBeingDone");
+                                _lastMove.fromX = ((long) moveMap.get("fromX"));
+                                _lastMove.fromY = ((long) moveMap.get("fromY"));
+
+                                _lastMove.toX = ((long) moveMap.get("toX"));
+                                _lastMove.toY = ((long) moveMap.get("toY"));
+
+                                _lastMove.kingMovedBlack = ((boolean) moveMap.get("kingMovedBlack"));
+                                _lastMove.kingMovedWhite = ((boolean) moveMap.get("kingMovedWhite"));
+
+                                _lastMove.kingRookMovedBlack = ((boolean)moveMap.get("kingRookMovedBlack"));
+                                _lastMove.kingRookMovedWhite = ((boolean)moveMap.get("kingRookMovedWhite"));
+
+                                _lastMove.queenRookMovedBlack = ((boolean)moveMap.get("queenRookMovedBlack"));
+                                _lastMove.queenRookMovedWhite = ((boolean)moveMap.get("queenRookMovedWhite"));
+
+                                /*
+                                Move(
+                                        new Vector2Int(Integer.parseInt(_lastMove.fromX+""), Integer.parseInt(_lastMove.fromY+"")),
+                                        new Vector2Int(Integer.parseInt(_lastMove.toX+""), Integer.parseInt(_lastMove.toY+""))
+                                );*/
+
+                                SelectCell(from, true);
+                                SelectCell(to, true);
+
+                                HaveLost(PieceColor.white);
+                                HaveLost(PieceColor.black);
+                            }
+                        }
+                    }
+                });
+
     }
 
     private void EnablePromotionUI() {
@@ -273,25 +329,15 @@ public class ChessGame extends AppCompatActivity {
     }
 
     private void GoBack() {
-        if(_gameEnded){
-            SaveChessGame(null);
-        }
-
         Intent intent = new Intent();
-        intent.setClass(ChessGame.this, MainActivity.class);
+        intent.setClass(ChessOnlineGame.this, MainActivity.class);
+
+        FirebaseFirestore.getInstance().collection("games").document(dataOnline.gameId).delete();
+
         startActivity(intent);
     }
 
-    private ChessGameData GetCurrentState() {
-        return new ChessGameData(
-                _board,
-                _currentPlayerColor,
-                _timers, _isPromotionMove,
-                _promotionPosition);
-    }
-
     private void SetUpTimer() {
-
         _timerUI = new HashMap<>();
         _timerUI.put(PieceColor.black, findViewById(R.id.timer1));
         _timerUI.put(PieceColor.white, findViewById(R.id.timer2));
@@ -308,7 +354,6 @@ public class ChessGame extends AppCompatActivity {
 
                     _handler.postDelayed(this, TIMER_INTERVAL);
                 } else {
-
                     TimeLose(PieceColor.white == _currentPlayerColor ? PieceColor.black : PieceColor.white);
                 }
             }
@@ -369,7 +414,7 @@ public class ChessGame extends AppCompatActivity {
 
     private void GetButtons() {
         _cellsToButtons = new HashMap<>();
-        //TODO Починить говнокод
+
         _cellsToButtons.put(new Vector2Int(0,0), (ImageButton) findViewById(R.id.cell11));
         _cellsToButtons.put(new Vector2Int(1,0), (ImageButton) findViewById(R.id.cell12));
         _cellsToButtons.put(new Vector2Int(2,0), (ImageButton) findViewById(R.id.cell13));
@@ -446,7 +491,7 @@ public class ChessGame extends AppCompatActivity {
     private void ChangePiece(Vector2Int position, Piece piece){
         Cell newCell = _board.GetCell(position);
         newCell.piece = piece;
-        Log.d("SAS", position.x + " " + position.y + " 354CG");
+
         _board.SetCell(newCell.position, newCell);
 
         if(piece == Piece.Empty){
@@ -457,9 +502,14 @@ public class ChessGame extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private void SelectCell(Vector2Int position){
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+    private void SelectCell(Vector2Int position, boolean isOpponent){
         ReturnNormalColors();
+
+        if(_currentPlayerColor != _thisPlayerColor && !isOpponent){
+            return;
+        }
 
         Cell selectedCell = _board.GetCell(position);
 
@@ -537,13 +587,14 @@ public class ChessGame extends AppCompatActivity {
     }
 
     private void Move(Vector2Int selectedCellPosition, Vector2Int position) {
+        //TODO Add online logics
         if(_isFirstMove){
             _handler.postDelayed(_runnable, TIMER_INTERVAL);
             _isFirstMove = false;
         }
 
         if(_isPromotionMove){
-            return;
+            //return;
         }
 
         Piece piece = _board.GetCell(selectedCellPosition).piece;
@@ -565,8 +616,29 @@ public class ChessGame extends AppCompatActivity {
 
             return;
         }
-
         _board.Move(selectedCellPosition, position);
+
+        _lastMove = new MoveOnlineData(_board.GetLastMove());
+        _dataBase.collection("games")
+                .document(dataOnline.gameId)
+                .update("LastMove",
+                        new MoveOnlineData(_board.GetLastMove())
+                );
+        _dataBase.collection("games")
+                .document(dataOnline.gameId)
+                .update("LastChangedCell1",
+                        new CellOnlineData(
+                                _board.GetLastMove().from.position.x,
+                                _board.GetLastMove().from.position.y,
+                                _board.GetLastMove().from.piece.type
+                        )
+                );
+//        _dataBase.collection("games")
+//                .document(dataOnline.gameId)
+//                .update("LastChangesUserId",
+//                        FirebaseAuth.getInstance().getCurrentUser().getUid()
+//                );
+
 
         ChangePlayerColor();
         RefreshImages();
@@ -637,7 +709,9 @@ public class ChessGame extends AppCompatActivity {
 
     private void ChangePlayerColor(){
         _timers.put(_currentPlayerColor, _timers.get(_currentPlayerColor) + _increment);
+
         UpdateTimersUI();
+
         if(_currentPlayerColor == PieceColor.white){
             _currentPlayerColor = PieceColor.black;
         }else if(_currentPlayerColor == PieceColor.black){
@@ -660,29 +734,6 @@ public class ChessGame extends AppCompatActivity {
     }
 
     private void UpdateImagesRotations() {
-        if(_enabledPiecesMirroring) {
-            for (int y = 0; y < _boardSize; y++) {
-                for (int x = 0; x < _boardSize; x++) {
-                    if (_currentPlayerColor == PieceColor.white) {
-                        Objects.requireNonNull(_cellsToButtons.get(new Vector2Int(x, y))).setRotation(0);
-                    } else if (_currentPlayerColor == PieceColor.black) {
-                        Objects.requireNonNull(_cellsToButtons.get(new Vector2Int(x, y))).setRotation(180);
-                    }
-                }
-            }
-        }
-
-        if(_enabledTimerMirroring){
-            for(PieceColor color : _timerUI.keySet()){
-                if(_currentPlayerColor == PieceColor.white){
-                    Objects.requireNonNull(_timerUI.get(color)).setRotation(0);
-                }
-                else if(_currentPlayerColor == PieceColor.black){
-                    Objects.requireNonNull(_timerUI.get(color)).setRotation(180);
-                }
-            }
-        }
-
         if(_showLastMove && _board.GetLastMove() != Move.Empty){
             Cell from = _board.GetLastMove().from;
             Cell to = _board.GetLastMove().to;
@@ -746,26 +797,13 @@ public class ChessGame extends AppCompatActivity {
         }
     }
 
-    private void SaveChessGame(ChessGameData chessGame) {
-        SharedPreferences sharedPreferences = getSharedPreferences("ChessGame", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        Gson gson = new Gson();
-        String chessGameJson = gson.toJson(chessGame);
-
-        editor.putString("ChessGameState", chessGameJson);
-        editor.apply();
-    }
-
-
     private ChessGameData LoadChessGame() {
+        //TODO Change Loading mechanic
         SharedPreferences sharedPreferences = getSharedPreferences("ChessGame", Context.MODE_PRIVATE);
         String chessGameJson = sharedPreferences.getString("ChessGameState", null);
 
         SharedPreferences sharedPref = getSharedPreferences("Settings", Context.MODE_PRIVATE);
 
-        _enabledPiecesMirroring = sharedPref.getBoolean(SETTINGS_MIRROR_PIECES, false);
-        _enabledTimerMirroring = sharedPref.getBoolean(SETTINGS_MIRROR_TIMER, false);
         _showLastMove = sharedPref.getBoolean(SETTINGS_SHOW_LAST_MOVE, false);
 
         if (chessGameJson != null) {
@@ -774,12 +812,6 @@ public class ChessGame extends AppCompatActivity {
         } else {
             return null;
         }
-    }
-
-    private void StartNewGame(){
-        SaveChessGame(null);
-        Intent intent = new Intent(ChessGame.this, CreateClassicGame.class);
-        startActivity(intent);
     }
 
     private boolean HaveLost(PieceColor color){
@@ -798,20 +830,17 @@ public class ChessGame extends AppCompatActivity {
 
         if(availableSafeMoves.isEmpty()){
             Lost(color == PieceColor.white ? PieceColor.black : PieceColor.white);
-            _gameEnded = true;
             return true;
         }
 
         return false;
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(!_gameEnded){
-            SaveChessGame(GetCurrentState());
-        }else{
-            SaveChessGame(null);
-        }
+
+        FirebaseFirestore.getInstance().collection("games").document(dataOnline.gameId).delete();
 
     }
 }

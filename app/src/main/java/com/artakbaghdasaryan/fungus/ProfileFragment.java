@@ -20,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class ProfileFragment extends Fragment {
 
-    private ProfileViewModel mViewModel;
     private Dialog _exitConfirmationPopup;
 
 
@@ -37,13 +36,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        // TODO: Use the ViewModel
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         _exitConfirmationPopup = new Dialog(getActivity());
 

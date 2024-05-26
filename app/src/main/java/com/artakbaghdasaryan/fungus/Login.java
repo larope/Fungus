@@ -30,7 +30,6 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         _binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(_binding.getRoot());
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         _binding.signUp.setOnClickListener(new View.OnClickListener() {
             @Override
